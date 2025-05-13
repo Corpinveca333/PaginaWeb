@@ -1,0 +1,86 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Actúa como un desarrollador frontend experto especializado en Next.js (App Router), TypeScript y Tailwind CSS.
+
+**Tarea:** Crea un **Componente React funcional** llamado `[NombreDelComponente]` en un nuevo archivo: `src/components/[NombreDelComponente].tsx`.
+
+**Propósito del Componente:**
+* Este componente debe [Describe brevemente la función principal del componente. Ej: "mostrar la barra de navegación principal", "renderizar una tarjeta para un servicio", "mostrar un héroe de bienvenida", "presentar un formulario de contacto"].
+
+**Datos y Props:**
+* Define una interfaz TypeScript `[NombreDelComponente]Props` para tipar las props que recibirá el componente.
+* Lista las props necesarias y opcionales (`?`) con sus tipos. Ej:
+    * `title: string`
+    * `items: Array<{ id: number; name: string; imageUrl?: string }>`
+    * `variant?: 'primary' | 'secondary'`
+* Indica el origen conceptual de los datos (aunque el componente solo reciba props). Ej: "Datos que vendrán de la API REST de WordPress (/posts)", "Información de un Tipo de Post Personalizado 'proyectos'".
+
+**Estructura y Contenido HTML:**
+* Usa **HTML semántico**: `<section>`, `<article>`, `<nav>`, `<aside>`, `<h1>`, `<h2>`, etc., según corresponda al propósito del componente.
+* Describe los elementos principales que debe contener. Ej: "Un logo, una lista de enlaces de navegación", "Una imagen, un título h3, un párrafo de descripción, un botón".
+* Si necesita enlaces internos, usa el componente `<Link>` de `next/link`.
+
+**Estilo Visual (Tailwind CSS):**
+* Usa **exclusivamente Tailwind CSS** para todos los estilos.
+* Describe la apariencia general deseada. Ej: "Diseño minimalista con fondo blanco y sombra suave", "Aspecto moderno con gradiente de fondo", "Paleta de colores acorde al Header existente (azules y grises)".
+* Especifica detalles clave de Tailwind si los tienes. Ej: "Padding general `p-6`", "Esquinas redondeadas `rounded-lg`", "Grid responsivo (`grid grid-cols-1 md:grid-cols-3 gap-4`)".
+* Asegura **diseño responsivo** usando prefijos de Tailwind (`sm:`, `md:`, `lg:`).
+
+**Interactividad y Efectos (Tailwind CSS):**
+* **Efectos Hover:** Si aplica, describe qué debe suceder al pasar el mouse. Usa el prefijo `hover:`. Ej:
+    * "Al hacer hover sobre la tarjeta, aumenta la sombra (`hover:shadow-xl`) y escala ligeramente (`hover:scale-105`)."
+    * "Los enlaces deben cambiar de color al hacer hover (`hover:text-blue-500`)."
+    * "Aplica una transición suave a los efectos hover (`transition-all duration-300`)."
+* **Efectos de Grupo (Group Hover):** Si un efecto en un elemento hijo depende del hover en el padre. Usa `group` en el padre y `group-hover:` en el hijo. Ej:
+    * "En la tarjeta (`group`), haz que un botón interno (`group-hover:opacity-100 opacity-0`) aparezca suavemente al hacer hover en la tarjeta."
+* **(Opcional) Efectos Complejos (Ej: Flip Card):** Describe la estructura y las clases necesarias (puede requerir clases arbitrarias `[]` o `[transform-style:preserve-3d]`, `[backface-visibility:hidden]`, `group-hover:[transform:rotateY(180deg)]`). Sé lo más detallado posible.
+
+**Accesibilidad (a11y):**
+* Asegura la accesibilidad básica. Ej: "Incluye `alt` text descriptivo para imágenes", "Usa atributos ARIA si es necesario para elementos interactivos complejos".
+
+**Consideraciones Adicionales:**
+* [Añade cualquier otra restricción, requisito o detalle importante. Ej: "Este componente no debe manejar estado interno (`useState`)", "Debe ser un Server Component", "Incluye comentarios explicando la lógica principal"].
+
+**-------------------- FIN PLANTILLA --------------------**
+
+**Ejemplo Rápido (Botón Reutilizable):**
+
+```text
+Actúa como un desarrollador frontend experto especializado en Next.js (App Router), TypeScript y Tailwind CSS.
+
+**Tarea:** Crea un **Componente React funcional** llamado `Button` en un nuevo archivo: `src/components/Button.tsx`.
+
+**Propósito del Componente:**
+* Este componente debe renderizar un botón o un enlace estilizado como botón, reutilizable en toda la aplicación.
+
+**Datos y Props:**
+* Define `ButtonProps`:
+    * `children: React.ReactNode` (el texto o icono dentro del botón)
+    * `href?: string` (Si se provee, renderiza un `Link` de Next.js, si no, un `<button>`)
+    * `variant?: 'primary' | 'secondary'` (default: 'primary')
+    * `onClick?: () => void` (Para usar con el tag `<button>`)
+    * `className?: string` (Para añadir clases extra desde fuera)
+
+**Estructura y Contenido HTML:**
+* Renderiza condicionalmente un `<Link href={href}>` o un `<button onClick={onClick}>`.
+* Muestra `{children}` dentro del elemento.
+
+**Estilo Visual (Tailwind CSS):**
+* Estilos base: `px-4 py-2 rounded-md font-semibold transition-colors duration-200`.
+* Estilo `primary`: `bg-blue-600 text-white`.
+* Estilo `secondary`: `bg-gray-200 text-gray-800`.
+* Aplica los estilos según la prop `variant`.
+* Fusiona las clases base/variante con `className` si se proporciona.
+
+**Interactividad y Efectos (Tailwind CSS):**
+* `primary`: `hover:bg-blue-700`.
+* `secondary`: `hover:bg-gray-300`.
+
+**Accesibilidad (a11y):**
+* Si es un `<button>`, asegúrate de que tenga `type="button"` por defecto si no se especifica otro.
+
+**Consideraciones Adicionales:**
+* Añade comentarios explicando la lógica condicional y las props.

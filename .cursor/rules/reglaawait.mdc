@@ -1,0 +1,28 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Regla de Oro: Manejo Asíncrono de params y Coherencia Estructural en Páginas de Detalle
+1. Principio Fundamental: Anticipar la Asincronía de params
+La Regla: Dentro de CUALQUIER función async que reciba params de una ruta dinámica de Next.js (esto incluye tanto el Componente de Página como la función generateMetadata), SIEMPRE debemos esperar (await) el objeto params antes de intentar acceder a cualquiera de sus propiedades (como slug).
+Implementación Estándar:
+Apply
+El "Por Qué" (Justificación Técnica):
+Aunque la firma de tipos ({ params: { slug: string } }) sugiere un objeto síncrono simple, el runtime de Next.js (especialmente con Server Components y el App Router) puede tener mecanismos internos que resuelven estos parámetros de forma que no siempre están disponibles instantáneamente al inicio de la ejecución de la función async.
+El error Error: Route "/<ruta>" used "params.slug". 'params' should be awaited... indica precisamente eso: intentamos usar una propiedad (slug) de un objeto (params) que internamente aún no estaba listo o "resuelto" en ese punto específico del ciclo de vida de la solicitud/renderizado.
+Al hacer await params;, le damos explícitamente a Next.js la oportunidad de completar cualquier trabajo interno necesario para que el objeto params y sus propiedades estén plenamente disponibles. Actúa como un punto de sincronización crucial antes de depender de esos valores para operaciones subsecuentes (como llamadas a la base de datos o APIs, que también son await). Piensa en ello como asegurarte de que la "promesa" de tener los parámetros listos se cumpla antes de continuar.
+2. Principio de Coherencia Estructural (Layout y Estilo)
+La Regla: Todas las páginas de detalle (/productos/[slug], /servicios/[slug], /proyectos/[slug], etc.) deben seguir una estructura JSX y un esquema de clases CSS coherente para garantizar una experiencia de usuario unificada y facilitar el mantenimiento.
+Estructura Base Estándar:
+Apply
+El "Por Qué" (Justificación de Diseño y Mantenimiento):
+Consistencia Visual: Los usuarios esperan una navegación y presentación predecible. Mantener la misma estructura base (fondo, contenedor, tipografía principal) en páginas similares refuerza la identidad visual y mejora la usabilidad.
+Evitar "Islas de Contenido": Al colocar todo el contenido relevante directamente dentro del div contenedor sobre el fondo bg-blue-900, evitamos el problema anterior de "tarjetas" (bg-white, bg-sky-100) que rompían el flujo visual y hacían que partes del contenido parecieran desconectadas. El objetivo es una página cohesiva.
+Mantenibilidad: Una estructura predecible hace que sea mucho más fácil para cualquier miembro del equipo (¡incluido tu yo futuro!) entender, modificar o depurar estas páginas. Sabes dónde esperar que estén los elementos clave.
+Adaptabilidad (Responsive): Usar un container con mx-auto y paddings (px-4, py-12, etc.) junto con clases responsivas de Tailwind (md:, lg:) asegura que el layout se adapte bien a diferentes tamaños de pantalla.
+En Resumen para el Día a Día:
+Cada vez que crees o modifiques una página de detalle dinámica:
+¿La función es async y recibe params? Sí -> Asegúrate de que const resolvedParams = await params; sea lo primero que hagas antes de usar resolvedParams.slug.
+
+¿La estructura JSX sigue el patrón del div azul externo, div contenedor interno y contenido directo sobre el fondo azul? Sí -> ¡Perfecto! No -> Ajústala para que coincida.

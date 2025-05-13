@@ -1,0 +1,45 @@
+globalThis.__BUILD_MANIFEST = {
+  "polyfillFiles": [
+    "static/chunks/polyfills.js"
+  ],
+  "devFiles": [],
+  "ampDevFiles": [],
+  "lowPriorityFiles": [],
+  "rootMainFiles": [
+    "static/chunks/webpack.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_build_polyfills_process_js-_app-page-cd7f31.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_assign-location_js-_app-pages-f7843c.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_components_links_js-_app-page-a0a87a.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_components_not-found_js-_app--3feef8.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_components_react-dev-overlay_-28754e.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_components_react-dev-overlay_-96793c.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_components_react-dev-overlay_-b94142.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_components_react-dev-overlay_-1c5643.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_components_react-dev-overlay_-7cc8d1.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_components_react-dev-overlay_-02e39e.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_components_react-dev-overlay_-06433d.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_components_react-dev-overlay_-14e1f3.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_components_react-dev-overlay_-963bca.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_components_react-dev-overlay_-b16fb3.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_components_redirect-boundary_js.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_components_router-reducer_ali-8c9d75.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_components_router-reducer_red-ea5a46.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_components_unresolved-thenabl-0958d3.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_client_dev_dev-build-indicator_initi-a3f1b0.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_compiled_anser_index_js-_app-pages-b-3c0434.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_compiled_next_react-refresh-utils_di-2b4053.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_compiled_react-dom_cjs_react-dom-cli-79a5a5.js",
+    "static/chunks/defaultVendors-_app-pages-browser_node_modules_next_dist_lib_require-instrumentation-client_j-5d4bc3.js",
+    "static/chunks/main-app.js"
+  ],
+  "rootMainFilesTree": {},
+  "pages": {
+    "/_app": []
+  },
+  "ampFirstPages": []
+};
+globalThis.__BUILD_MANIFEST.lowPriorityFiles = [
+"/static/" + process.env.__NEXT_BUILD_ID + "/_buildManifest.js",
+,"/static/" + process.env.__NEXT_BUILD_ID + "/_ssgManifest.js",
+
+];
