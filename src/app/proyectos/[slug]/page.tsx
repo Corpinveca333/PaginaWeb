@@ -5,12 +5,13 @@ import { getProyectoBySlug } from '@/services/wordpress';
 import ProjectCard from '@/components/ProjectCard';
 
 interface ProyectoDetailPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export async function generateMetadata({ params }: ProyectoDetailPageProps): Promise<Metadata> {
-  const slug = params.slug;
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
   const proyecto = await getProyectoBySlug(slug);
 
   if (!proyecto) {
@@ -32,7 +33,8 @@ export async function generateMetadata({ params }: ProyectoDetailPageProps): Pro
 }
 
 export default async function ProyectoDetailPage({ params }: ProyectoDetailPageProps) {
-  const slug = params.slug;
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
   const proyecto = await getProyectoBySlug(slug);
   if (!proyecto) {
     notFound();

@@ -6,7 +6,7 @@ import { getProductBySlug, getProducts, ProductPost } from '@/services/wordpress
 import ProductCard from '@/components/ProductCard';
 
 interface ProductoDetailPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
@@ -23,7 +23,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: ProductoDetailPageProps): Promise<Metadata> {
-  const slug = params.slug;
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
   const producto = await getProductBySlug(slug);
 
   if (!producto) {
@@ -43,7 +44,8 @@ export async function generateMetadata({ params }: ProductoDetailPageProps): Pro
 }
 
 export default async function ProductoDetailPage({ params }: ProductoDetailPageProps) {
-  const slug = params.slug;
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
   const producto = await getProductBySlug(slug);
 
   if (!producto) {
