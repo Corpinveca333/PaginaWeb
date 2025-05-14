@@ -4,15 +4,13 @@ import { getServiceBySlug, getServices } from '@/services/wordpress';
 import ServiceCard from '@/components/ServiceCard';
 import { Servicio } from '@/services/wordpress';
 
-interface Props {
-  params: {
-    slug: string;
-  };
+interface ServicioDetailPageProps {
+  params: { slug: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
+export async function generateMetadata({ params }: ServicioDetailPageProps): Promise<Metadata> {
+  const slug = params.slug;
   const servicio = await getServiceBySlug(slug);
 
   if (!servicio) {
@@ -35,9 +33,8 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function ServicioDetailPage({ params }: Props) {
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
+export default async function ServicioDetailPage({ params }: ServicioDetailPageProps) {
+  const slug = params.slug;
   const servicio = await getServiceBySlug(slug);
 
   if (!servicio) {

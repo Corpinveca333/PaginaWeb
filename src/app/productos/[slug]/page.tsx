@@ -7,6 +7,7 @@ import ProductCard from '@/components/ProductCard';
 
 interface ProductoDetailPageProps {
   params: { slug: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export async function generateStaticParams() {
@@ -22,8 +23,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: ProductoDetailPageProps): Promise<Metadata> {
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
+  const slug = params.slug;
   const producto = await getProductBySlug(slug);
 
   if (!producto) {
@@ -43,8 +43,7 @@ export async function generateMetadata({ params }: ProductoDetailPageProps): Pro
 }
 
 export default async function ProductoDetailPage({ params }: ProductoDetailPageProps) {
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
+  const slug = params.slug;
   const producto = await getProductBySlug(slug);
 
   if (!producto) {

@@ -6,11 +6,11 @@ import ProjectCard from '@/components/ProjectCard';
 
 interface ProyectoDetailPageProps {
   params: { slug: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export async function generateMetadata({ params }: ProyectoDetailPageProps): Promise<Metadata> {
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
+  const slug = params.slug;
   const proyecto = await getProyectoBySlug(slug);
 
   if (!proyecto) {
@@ -32,8 +32,7 @@ export async function generateMetadata({ params }: ProyectoDetailPageProps): Pro
 }
 
 export default async function ProyectoDetailPage({ params }: ProyectoDetailPageProps) {
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
+  const slug = params.slug;
   const proyecto = await getProyectoBySlug(slug);
   if (!proyecto) {
     notFound();
