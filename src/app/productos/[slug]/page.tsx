@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
+// import Image from 'next/image'; // No utilizada
 import type { Metadata } from 'next';
 import { getProductBySlug, getProducts, ProductPost } from '@/services/wordpress';
-import AddToRequestButton from '@/components/AddToRequestButton';
+// import AddToRequestButton from '@/components/AddToRequestButton'; // No utilizada
 import ProductCard from '@/components/ProductCard';
 
 interface ProductoDetailPageProps {
@@ -116,23 +116,5 @@ export default async function ProductoDetailPage({ params }: ProductoDetailPageP
         </div>
       </div>
     </>
-  );
-}
-
-export async function ProductosPage() {
-  const productos = await getProducts();
-
-  return (
-    <section className="bg-white py-12 min-h-screen">
-      <div className="container mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">Nuestros Productos</h1>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {productos.map(producto => (
-            <ProductCard key={producto.id} producto={producto} />
-          ))}
-        </div>
-      </div>
-    </section>
   );
 }
