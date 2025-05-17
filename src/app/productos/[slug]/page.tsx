@@ -6,7 +6,7 @@ import { getProductBySlug, getProducts, ProductPost } from '@/services/wordpress
 import ProductCard from '@/components/ProductCard';
 
 interface ProductoDetailPageProps {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
