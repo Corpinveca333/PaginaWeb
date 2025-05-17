@@ -5,7 +5,7 @@ import { getProyectoBySlug } from '@/services/wordpress';
 import ProjectCard from '@/components/ProjectCard';
 
 interface ProyectoDetailPageProps {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
