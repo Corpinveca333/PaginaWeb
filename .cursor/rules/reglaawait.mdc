@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: true
+alwaysApply: false
 ---
 Regla de Oro: Manejo Asíncrono de params y Coherencia Estructural en Páginas de Detalle
 1. Principio Fundamental: Anticipar la Asincronía de params
