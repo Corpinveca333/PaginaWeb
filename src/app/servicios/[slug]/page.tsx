@@ -5,7 +5,7 @@ import ServiceCard from '@/components/ServiceCard';
 import { Servicio } from '@/services/wordpress';
 
 interface ServicioDetailPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
