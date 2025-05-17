@@ -28,10 +28,10 @@ export async function fetchGraphQL<T = any>(
   variables?: Record<string, any>,
   options?: { revalidate?: number }
 ): Promise<T | null> {
-  const graphqlEndpoint = process.env.NEXT_PUBLIC_WORDPRESS_GRAPHQL_ENDPOINT;
+  const graphqlEndpoint = process.env.WP;
 
   if (!graphqlEndpoint) {
-    console.error('Error: NEXT_PUBLIC_WORDPRESS_GRAPHQL_ENDPOINT no está definida.');
+    console.error('Error: La variable de entorno WP para GraphQL no está definida.');
     return null;
   }
 
