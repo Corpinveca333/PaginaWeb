@@ -1,7 +1,7 @@
 // import { getPageByUri } from '@/services/wordpress'; // Ajusta la ruta si es necesario
 // import type { WpPage } from '@/services/wordpress'; // Ajusta la ruta si es necesario
-import { notFound } from 'next/navigation';
-import Image from 'next/image';
+// import { notFound } from 'next/navigation';
+// import Image from 'next/image';
 import type { Metadata } from 'next';
 import { getPaginaBySlugSupabase, PaginaEstatica } from '@/services/supabase';
 import SafeHtmlRenderer from '@/components/SafeHtmlRenderer';

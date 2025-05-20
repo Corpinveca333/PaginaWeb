@@ -3,18 +3,18 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 // import { getProducts, getServices } from '@/services/wordpress'; // Eliminado
 // import type { ProductPost, Servicio } from '@/services/wordpress'; // Eliminado
-import TestimonialCard from '@/components/TestimonialCard';
+// import TestimonialCard from '@/components/TestimonialCard'; // No utilizado
 // Import Swiper React components
-import { Swiper, SwiperSlide } from 'swiper/react';
+// import { Swiper, SwiperSlide } from 'swiper/react'; // No utilizado
 // Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
+// import 'swiper/css'; // No utilizado
+// import 'swiper/css/pagination'; // No utilizado
+// import 'swiper/css/navigation'; // No utilizado
 // Import Swiper modules
-import { Pagination, Navigation, Autoplay } from 'swiper/modules';
+// import { Pagination, Navigation, Autoplay } from 'swiper/modules'; // No utilizado
 import TestimonialSlider from '@/components/TestimonialSlider';
 import { getAllProductosSupabase, getAllServiciosSupabase } from '../services/supabase'; // Import Supabase functions
-import type { Producto, ServicioListItem } from '../services/supabase'; // Import types
+// import type { Producto, ServicioListItem } from '../services/supabase'; // No utilizado, se usan Product y Service definidos localmente
 
 // Tipos genéricos para productos y servicios
 interface Product {
@@ -44,19 +44,19 @@ interface Service {
 }
 
 // Iconos para placeholders (puedes reemplazarlos con react-icons o SVGs personalizados)
-const PlaceholderIcon = ({ className }: { className?: string }) => (
-  <svg
-    className={className || 'w-6 h-6 text-gray-400'}
-    fill="none"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    strokeWidth="2"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-  >
-    <path d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-  </svg>
-);
+// const PlaceholderIcon = ({ className }: { className?: string }) => ( // No utilizado
+//   <svg
+//     className={className || 'w-6 h-6 text-gray-400'}
+//     fill="none"
+//     strokeLinecap="round"
+//     strokeLinejoin="round"
+//     strokeWidth="2"
+//     viewBox="0 0 24 24"
+//     stroke="currentColor"
+//   >
+//     <path d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+//   </svg>
+// );
 
 export async function generateMetadata(): Promise<Metadata> {
   const pageTitle = 'Corpinveca: Tu Solución Industrial Innovadora';
@@ -70,135 +70,19 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // Datos mockeados para productos
-const mockProducts: Product[] = [
-  {
-    id: '1',
-    title: 'Motor Industrial X100',
-    slug: 'motor-industrial-x100',
-    featuredImage: {
-      url: '/images/products/motor-x100.jpg',
-      altText: 'Motor Industrial X100',
-    },
-    excerpt: 'Motor de alta eficiencia para aplicaciones industriales exigentes.',
-  },
-  {
-    id: '2',
-    title: 'Panel de Control Avanzado',
-    slug: 'panel-control-avanzado',
-    featuredImage: {
-      url: '/images/products/panel-control.jpg',
-      altText: 'Panel de Control Avanzado',
-    },
-    excerpt: 'Panel de control con automatización y monitoreo remoto.',
-  },
-];
+// const mockProducts: Product[] = [ // No utilizado
+// ... (contenido de mockProducts eliminado)
+// ];
 
 // Datos mockeados para servicios
-const mockServices: Service[] = [
-  {
-    id: '1',
-    title: 'Servicio de Consultoría',
-    slug: 'servicio-consultoria',
-    featuredImage: {
-      url: '/images/services/consulting.jpg',
-      altText: 'Servicio de Consultoría',
-    },
-    icon: {
-      url: '/images/icons/consulting.svg',
-      altText: 'Icono de Consultoría',
-    },
-    excerpt: 'Servicios profesionales de consultoría para empresas.',
-  },
-  {
-    id: '2',
-    title: 'Desarrollo de Software',
-    slug: 'desarrollo-software',
-    featuredImage: {
-      url: '/images/services/development.jpg',
-      altText: 'Desarrollo de Software',
-    },
-    icon: {
-      url: '/images/icons/development.svg',
-      altText: 'Icono de Desarrollo',
-    },
-    excerpt: 'Desarrollo de soluciones software a medida.',
-  },
-];
+// const mockServices: Service[] = [ // No utilizado
+// ... (contenido de mockServices eliminado)
+// ];
 
 // Datos que antes estaban en HomePage, ahora definidos aquí para usarlos en la nueva estructura
-const differentiatorsData = [
-  {
-    // Un icono sería ideal aquí, la plantilla suele usar SVGs o una librería de iconos.
-    // Por ahora, dejaremos un placeholder o podríamos reusar tus imágenes si se adaptan.
-    // Placeholder para un icono SVG
-    icon: (
-      <svg
-        className="w-10 h-10 text-primary mb-4"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path d="M5 13l4 4L19 7"></path>
-      </svg>
-    ),
-    title: 'Experiencia Comprobada',
-    description:
-      'Más de 20 años en el sector industrial validan nuestra capacidad para entregar resultados sólidos y confiables.',
-    imageSrc: '/tarjeta01.jpeg', // Mantendremos tus imágenes si son adecuadas para el nuevo diseño de tarjeta
-    imageAlt: 'Experiencia comprobada',
-  },
-  {
-    icon: (
-      <svg
-        className="w-10 h-10 text-primary mb-4"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path d="M12 6V4m0 16v-2m8-8h2M4 12H2m14.364 5.636l1.414 1.414M5.222 5.222l1.414 1.414M18.364 5.636l-1.414 1.414M6.636 18.364l-1.414 1.414M12 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-      </svg>
-    ),
-    title: 'Soluciones a Medida',
-    description:
-      'Diseñamos e implementamos soluciones personalizadas que se adaptan perfectamente a tus necesidades.',
-    imageSrc: '/tarjeta02.jpeg',
-    imageAlt: 'Soluciones personalizadas',
-  },
-  {
-    icon: (
-      <svg
-        className="w-10 h-10 text-primary mb-4"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path d="M9 12l2 2 4-4m0 6H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2z"></path>
-      </svg>
-    ),
-    title: 'Compromiso con Calidad',
-    description:
-      'Altos estándares, asegurando excelencia, durabilidad y rendimiento óptimo en servicios y productos.',
-    imageSrc: '/tarjeta03.jpeg',
-    imageAlt: 'Compromiso con calidad',
-  },
-  // Podríamos añadir el cuarto diferenciador si el diseño lo permite bien.
-  // {
-  //   icon: ( /* Icono */ ),
-  //   title: 'Atención al Cliente',
-  //   description: 'Tu satisfacción es nuestra prioridad. Acompañamiento cercano y respuestas eficientes.',
-  //   imageSrc: '/tarjeta05.jpeg',
-  //   imageAlt: 'Atención al cliente',
-  // },
-];
+// const differentiatorsData = [ // No utilizado
+// ... (contenido de differentiatorsData eliminado)
+// ];
 
 // NUEVO: Componente para Tarjeta de Producto Destacado
 function FeaturedProductCard({ product }: { product: Product }) {

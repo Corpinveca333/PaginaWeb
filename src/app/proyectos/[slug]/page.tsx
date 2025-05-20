@@ -25,7 +25,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-  searchParams,
+  searchParams: _searchParams,
 }: ProyectoDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
   const proyecto: Proyecto | null = await getProyectoBySlugSupabase(slug);
@@ -49,7 +49,7 @@ export async function generateMetadata({
 
 export default async function ProyectoDetailPage({
   params,
-  searchParams,
+  searchParams: _searchParams,
 }: ProyectoDetailPageProps) {
   const { slug } = await params;
   const proyecto: Proyecto | null = await getProyectoBySlugSupabase(slug);
@@ -70,11 +70,6 @@ export default async function ProyectoDetailPage({
       .substring(0, 250)
       .trim() + '...' ||
     `Detalles sobre el proyecto ${slug} ofrecido por Corpinveca.`;
-
-  let articleBodyContent = [proyecto.content, proyecto.detalles_alcance]
-    .filter(Boolean)
-    .join('\n\n');
-  articleBodyContent = articleBodyContent.replace(/<[^>]*>?/gm, '').trim();
 
   const images = [proyecto.featured_image_url, proyecto.imagen_adicional_url].filter(
     Boolean

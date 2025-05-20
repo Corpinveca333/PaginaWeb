@@ -12,7 +12,7 @@ export type ProductoListItem = Pick<
 // Función para obtener productos publicados con búsqueda y filtrado (listado)
 export async function getAllProductosSupabase(
   searchTerm?: string,
-  filterBy?: any,
+  filterBy?: Record<string, unknown>,
   limit?: number
 ): Promise<Producto[]> {
   let query = supabase.from('productos').select('*').eq('is_published', true);
@@ -66,14 +66,23 @@ export type Proyecto = Database['public']['Tables']['proyectos']['Row'];
 // Tipo para un ítem de proyecto en un listado
 export type ProyectoListItem = Pick<
   Proyecto,
-  'id' | 'title' | 'slug' | 'excerpt' | 'featured_image_url' | 'cliente' | 'fecha_de_realizacion'
+  | 'id'
+  | 'title'
+  | 'slug'
+  | 'excerpt'
+  | 'featured_image_url'
+  | 'cliente'
+  | 'fecha_de_realizacion'
+  | 'created_at'
 >;
 
 // Función para obtener TODOS los proyectos publicados
 export async function getAllProyectosSupabase(): Promise<ProyectoListItem[]> {
   const { data, error } = await supabase
     .from('proyectos')
-    .select('id, title, slug, excerpt, featured_image_url, cliente, fecha_de_realizacion')
+    .select(
+      'id, title, slug, excerpt, featured_image_url, cliente, fecha_de_realizacion, created_at'
+    )
     .eq('is_published', true)
     .order('created_at', { ascending: false });
 
@@ -109,18 +118,18 @@ export type Servicio = Database['public']['Tables']['servicios']['Row'];
 // Tipo para un ítem de servicio en un listado
 export type ServicioListItem = Pick<
   Servicio,
-  'id' | 'title' | 'slug' | 'excerpt' | 'featured_image_url' | 'icono_url' | 'precio'
+  'id' | 'title' | 'slug' | 'excerpt' | 'featured_image_url' | 'icono_url' | 'precio' | 'created_at'
 >;
 
 // Función para obtener servicios publicados con búsqueda y filtrado (listado)
 export async function getAllServiciosSupabase(
   searchTerm?: string,
-  filterBy?: any,
+  filterBy?: Record<string, unknown>,
   limit?: number
 ): Promise<ServicioListItem[]> {
   let query = supabase
     .from('servicios')
-    .select('id, title, slug, excerpt, featured_image_url, icono_url, precio')
+    .select('id, title, slug, excerpt, featured_image_url, icono_url, precio, created_at')
     .eq('is_published', true);
 
   if (searchTerm) {

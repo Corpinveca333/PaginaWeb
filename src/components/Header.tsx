@@ -22,7 +22,7 @@ const defaultMenuItems: MenuItem[] = [
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [sticky, setSticky] = useState(false);
-  const pathname = usePathname();
+  const _pathname = usePathname();
   const { state } = useRequestList();
   const itemCount = state.items.length;
 

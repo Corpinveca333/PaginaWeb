@@ -10,7 +10,6 @@ interface HeroSectionProps {
   subtitle: string;
   ctaText?: string;
   ctaLink?: string;
-  imageSrc: string;
 }
 
 const HeroSection: React.FC<HeroSectionProps> = ({
@@ -18,7 +17,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   subtitle,
   ctaText = 'Ver Servicios',
   ctaLink = '/servicios',
-  imageSrc = 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158',
 }) => {
   return (
     <section className="relative min-h-[85vh] overflow-hidden bg-white flex items-center">

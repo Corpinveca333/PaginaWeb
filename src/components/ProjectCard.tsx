@@ -50,15 +50,22 @@ export default function ProjectCard({
   }
 
   // Campos comunes
-  const { id, title, slug, excerpt, featured_image_url, cliente, fecha_de_realizacion } = proyecto;
+  const {
+    /* id, */ title,
+    slug,
+    /* excerpt, */ featured_image_url,
+    cliente,
+    fecha_de_realizacion,
+  } = proyecto;
+  const _id = proyecto.id; // Renombrado y asignado si es necesario en otro lugar, sino eliminar
 
   // Campos específicos del modo detalle
-  const content =
-    displayMode === 'detail' && 'content' in proyecto ? (proyecto as Proyecto).content : null;
-  const detallesAlcanceOriginal =
-    displayMode === 'detail' && 'detalles_alcance' in proyecto
-      ? (proyecto as Proyecto).detalles_alcance
-      : null;
+  // const content = // Eliminado, se usa proyecto.content en useEffect
+  //   displayMode === 'detail' && 'content' in proyecto ? (proyecto as Proyecto).content : null;
+  // const detallesAlcanceOriginal = // Eliminado, se usa proyecto.detalles_alcance en useEffect
+  //   displayMode === 'detail' && 'detalles_alcance' in proyecto
+  //     ? (proyecto as Proyecto).detalles_alcance
+  //     : null;
   const imagenAdicionalUrl =
     displayMode === 'detail' && 'imagen_adicional_url' in proyecto
       ? (proyecto as Proyecto).imagen_adicional_url

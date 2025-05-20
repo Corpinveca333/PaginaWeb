@@ -38,7 +38,10 @@ export class ApiService {
   /**
    * Realiza una petición a la API GraphQL
    */
-  private async fetchGraphQL<T>(query: string, variables: any = {}): Promise<T> {
+  private async fetchGraphQL<T>(
+    query: string,
+    variables: Record<string, unknown> = {}
+  ): Promise<T> {
     try {
       const response = await fetch(this.graphqlEndpoint, {
         method: 'POST',

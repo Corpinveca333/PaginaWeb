@@ -51,15 +51,15 @@ export default function ServiceCard({
   }
 
   // Campos comunes
-  const { id, title, slug, excerpt, featured_image_url, icono_url, precio } = servicio;
+  const { id, title, slug, featured_image_url, icono_url, precio } = servicio;
 
   // Campos específicos del modo detalle
-  const content =
-    displayMode === 'detail' && 'content' in servicio ? (servicio as Servicio).content : null;
-  const alcanceDelServicio =
-    displayMode === 'detail' && 'alcance_del_servicio' in servicio
-      ? (servicio as Servicio).alcance_del_servicio
-      : null;
+  // const content = // Eliminado, se usa servicio.content en useEffect
+  //   displayMode === 'detail' && 'content' in servicio ? (servicio as Servicio).content : null;
+  // const alcanceDelServicio = // Eliminado, se usa servicio.alcance_del_servicio en useEffect
+  //   displayMode === 'detail' && 'alcance_del_servicio' in servicio
+  //     ? (servicio as Servicio).alcance_del_servicio
+  //     : null;
 
   const imageUrl = featured_image_url || '/placeholder-service-image.jpg';
   const baseUrl = 'servicios';

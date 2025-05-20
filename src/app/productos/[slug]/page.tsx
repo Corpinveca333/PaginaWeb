@@ -28,7 +28,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-  searchParams,
+  searchParams: _searchParams,
 }: ProductoDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
   const producto: Producto | null = await getProductoBySlugSupabase(slug);
@@ -52,7 +52,7 @@ export async function generateMetadata({
 
 export default async function ProductoDetailPage({
   params,
-  searchParams,
+  searchParams: _searchParams,
 }: ProductoDetailPageProps) {
   const { slug } = await params;
   const producto: Producto | null = await getProductoBySlugSupabase(slug);

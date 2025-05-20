@@ -10,7 +10,7 @@ interface ServicioDetailPageProps {
 
 export async function generateMetadata({
   params,
-  searchParams,
+  searchParams: _searchParams,
 }: ServicioDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
   const servicio: Servicio | null = await getServicioBySlugSupabase(slug);
@@ -47,7 +47,7 @@ export async function generateStaticParams() {
 
 export default async function ServicioDetailPage({
   params,
-  searchParams,
+  searchParams: _searchParams,
 }: ServicioDetailPageProps) {
   const { slug } = await params;
   const servicio: Servicio | null = await getServicioBySlugSupabase(slug);

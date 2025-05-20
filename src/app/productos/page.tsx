@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import DOMPurify from 'dompurify';
-import { getAllProductosSupabase, Producto } from '@/services/supabase';
+// import { getAllProductosSupabase, Producto } from '@/services/supabase'; // Producto no se usa
+import { getAllProductosSupabase } from '@/services/supabase';
 import AddToRequestButton from '@/components/AddToRequestButton'; // Mantener el botón
 import ProductCard from '@/components/ProductCard';
 import SearchInput from '@/components/SearchInput'; // Importar el nuevo componente
@@ -15,85 +16,14 @@ export const metadata: Metadata = {
 
 // Componente de Tarjeta de Producto individual (estilo plantilla) - Este podría seguir siendo un Client Component si usa hooks internos o interacciones
 // Por ahora, lo mantendremos como estaba, asumiendo que ProductCard maneja su estado interno si es necesario.
-function ProductCardItem({ producto }: { producto?: any }) {
-  // Modificado: producto es opcional y de tipo any
-  const { id, title, slug, featuredImage, camposDeProducto, excerpt } = producto || {}; // Valores por defecto si producto es null/undefined
-
-  const imageUrl = featuredImage?.node?.sourceUrl || '/placeholder-product.jpg';
-  const precio = camposDeProducto?.precio;
-  const sku = camposDeProducto?.numeroDeParteSku;
-
-  const itemDataForButton = {
-    id: id || 'default-id', // Proveer default si id no existe
-    name: title || 'Producto Placeholder', // Proveer default
-    precio: precio,
-    sku: sku || 'PRODUCTO-SKU', // Proveer default
-    image: imageUrl,
-    slug: slug || '#', // Proveer default
-  };
-
-  return (
-    <div className="bg-gray-50 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
-      <Link href={slug ? `/productos/${slug}` : '#'} className="block relative w-full h-60 group">
-        <Image
-          src={imageUrl}
-          alt={title || 'Imagen del Producto'} // Proveer default
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
-      </Link>
-      <div className="p-5 flex flex-col flex-grow">
-        <h3
-          className="font-semibold text-lg md:text-xl text-dark mb-2 truncate"
-          title={title || 'Título no disponible'}
-        >
-          <Link
-            href={slug ? `/productos/${slug}` : '#'}
-            className="hover:text-primary transition-colors"
-          >
-            {title || 'Título del Producto Placeholder'}
-          </Link>
-        </h3>
-        {excerpt && (
-          <div
-            className="text-body-color text-sm mb-4 flex-grow overflow-hidden line-clamp-3"
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(excerpt, { USE_PROFILES: { html: true } }),
-            }}
-          />
-        )}
-        {/* Mostrar precio si está disponible */}
-        {precio !== undefined &&
-          precio !== null && ( // Se mantiene la lógica original, pero los datos pueden ser undefined
-            <p className="text-xl font-semibold text-primary mb-3">
-              {typeof precio === 'number'
-                ? precio.toLocaleString('es-VE', { style: 'currency', currency: 'VES' })
-                : 'Precio no disponible'}
-            </p>
-          )}
-        <div className="mt-auto flex items-center justify-between gap-2 pt-2">
-          <Link
-            href={slug ? `/productos/${slug}` : '#'}
-            className="inline-block text-center rounded-md bg-primary hover:bg-primary-dark py-2 px-4 text-sm font-medium text-white transition duration-300 ease-in-out"
-          >
-            Ver Detalles
-          </Link>
-          <AddToRequestButton
-            item={itemDataForButton} // itemDataForButton ya maneja valores por defecto
-            className="rounded-md bg-secondary hover:bg-opacity-90 py-2 px-4 text-sm font-medium text-white transition duration-300 ease-in-out"
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
+// function ProductCardItem({ producto }: { producto?: any }) { // COMPONENTE ELIMINADO POR NO USARSE
+// ... (todo el contenido de ProductCardItem eliminado)
+// }
 
 // Añadido async y modificado el tipo de searchParams para que sea una Promesa
 export default async function ProductosPage({
   searchParams,
 }: {
-  // Definido el tipo de searchParams como Promesa
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   // Esperar searchParams antes de acceder a sus propiedades
