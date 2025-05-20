@@ -1,120 +1,92 @@
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import type { Metadata } from 'next';
-import { getProyectoBySlug } from '@/services/wordpress';
+import {
+  getProyectoBySlugSupabase,
+  getAllProyectosSupabase,
+  Proyecto,
+  ProyectoListItem,
+} from '@/services/supabase';
 import ProjectCard from '@/components/ProjectCard';
 
 interface ProyectoDetailPageProps {
   params: Promise<{ slug: string }>;
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export async function generateStaticParams() {
+  const proyectos: ProyectoListItem[] = await getAllProyectosSupabase();
+  if (!proyectos || proyectos.length === 0) {
+    return [];
+  }
+  return proyectos.map(proyecto => ({
+    slug: proyecto.slug,
+  }));
 }
 
 export async function generateMetadata({ params }: ProyectoDetailPageProps): Promise<Metadata> {
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
-  const proyecto = await getProyectoBySlug(slug);
+  const { slug } = await params;
+  const proyecto: Proyecto | null = await getProyectoBySlugSupabase(slug);
 
   if (!proyecto) {
     return {
       title: 'Proyecto no encontrado | Corpinveca',
+      description: 'El proyecto solicitado no existe o no está disponible.',
     };
   }
 
   const pageTitle = `${proyecto.title} | Proyectos Corpinveca`;
-  const projectDescription =
-    proyecto.camposDeProyecto?.detallesalcanceDelProyecto ||
-    proyecto.content?.substring(0, 155) ||
-    `Conoce más sobre nuestro proyecto: ${proyecto.title}`;
+  const pageDescription =
+    proyecto.excerpt || proyecto.content?.substring(0, 155) || `Detalles sobre ${proyecto.title}`;
 
   return {
     title: pageTitle,
-    description: projectDescription.replace(/<[^>]*>?/gm, ''),
+    description: pageDescription.replace(/<[^>]*>?/gm, ''),
   };
 }
 
 export default async function ProyectoDetailPage({ params }: ProyectoDetailPageProps) {
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
-  const proyecto = await getProyectoBySlug(slug);
+  const { slug } = await params;
+  const proyecto: Proyecto | null = await getProyectoBySlugSupabase(slug);
+
   if (!proyecto) {
     notFound();
   }
 
   // Preparar datos para JSON-LD
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.corpinveca.com';
-  const canonicalUrl = `${siteUrl}/proyectos/${proyecto.slug}`;
+  const canonicalUrl = `${siteUrl}/proyectos/${slug}`;
 
   // Prepara la descripción y el cuerpo del artículo (limpiando HTML)
-  let shortDescription = '';
-  if (proyecto.excerpt) {
-    shortDescription = proyecto.excerpt.replace(/<[^>]*>?/gm, '').trim();
-  } else if (proyecto.camposDeProyecto?.detallesalcanceDelProyecto) {
-    shortDescription =
-      proyecto.camposDeProyecto.detallesalcanceDelProyecto
-        .replace(/<[^>]*>?/gm, '')
-        .substring(0, 160)
-        .trim() + '...';
-  } else if (proyecto.content) {
-    shortDescription =
-      proyecto.content
-        .replace(/<[^>]*>?/gm, '')
-        .substring(0, 160)
-        .trim() + '...';
-  } else {
-    shortDescription = `Detalles sobre el proyecto ${proyecto.title} realizado por Corpinveca.`;
-  }
+  const cleanDescription =
+    proyecto.excerpt?.replace(/<[^>]*>?/gm, '').trim() ||
+    proyecto.content
+      ?.replace(/<[^>]*>?/gm, '')
+      .substring(0, 250)
+      .trim() + '...' ||
+    `Detalles sobre el proyecto ${slug} ofrecido por Corpinveca.`;
 
-  if (shortDescription.length > 160) {
-    shortDescription = shortDescription.substring(0, 157).trim() + '...';
-  }
-
-  let articleBodyContent =
-    (proyecto.content || '') +
-    '\n\n' +
-    (proyecto.camposDeProyecto?.detallesalcanceDelProyecto || '');
+  let articleBodyContent = [proyecto.content, proyecto.detalles_alcance]
+    .filter(Boolean)
+    .join('\n\n');
   articleBodyContent = articleBodyContent.replace(/<[^>]*>?/gm, '').trim();
 
-  const images = [proyecto.featuredImage?.node?.sourceUrl];
-  if (proyecto.camposDeProyecto?.galeriaDeImagenes?.node?.sourceUrl) {
-    images.push(proyecto.camposDeProyecto.galeriaDeImagenes.node.sourceUrl);
-  }
-  const validImages = images.filter(Boolean) as string[];
+  const images = [proyecto.featured_image_url, proyecto.imagen_adicional_url].filter(
+    Boolean
+  ) as string[];
 
   const proyectoJsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: proyecto.title,
-    description: shortDescription,
-    image: validImages.length > 0 ? validImages : [`${siteUrl}/placeholder-project-image.jpg`],
-    articleBody: articleBodyContent,
-    author: {
-      '@type': 'Organization',
-      name: 'Corpinveca',
-      url: siteUrl,
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'Corpinveca',
-      logo: {
-        '@type': 'ImageObject',
-        url: `${siteUrl}/logo.svg`,
-      },
-    },
-    datePublished:
-      proyecto.camposDeProyecto?.fechaDeRealizacion || proyecto.date || new Date().toISOString(),
-    dateModified:
-      proyecto.camposDeProyecto?.fechaDeRealizacion || proyecto.date || new Date().toISOString(),
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': canonicalUrl,
-    },
+    '@type': 'Project',
+    name: proyecto.title,
+    description: cleanDescription,
+    image: images.length > 0 ? images : [`${siteUrl}/placeholder-project-image.jpg`],
     url: canonicalUrl,
-    ...(proyecto.camposDeProyecto?.cliente
+    ...(proyecto.cliente
       ? {
           mentions: [
             {
               '@type': 'Organization',
-              name: proyecto.camposDeProyecto.cliente,
+              name: proyecto.cliente,
             },
           ],
         }
@@ -130,7 +102,6 @@ export default async function ProyectoDetailPage({ params }: ProyectoDetailPageP
       <div className="bg-white min-h-[calc(100vh-80px)]">
         <div className="container mx-auto px-4 py-12 md:py-16 lg:py-20">
           <h1 className="text-4xl font-bold text-center mb-12 text-gray-900">{proyecto.title}</h1>
-
           <ProjectCard
             proyecto={proyecto}
             displayMode="detail"

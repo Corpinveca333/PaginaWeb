@@ -1,35 +1,39 @@
 import { notFound } from 'next/navigation';
 // import Image from 'next/image'; // No utilizada
 import type { Metadata } from 'next';
-import { getProductBySlug, getProducts, ProductPost } from '@/services/wordpress';
+// import { getProductBySlug, getProducts, ProductPost } from '@/services/wordpress';
 // import AddToRequestButton from '@/components/AddToRequestButton'; // No utilizada
 import ProductCard from '@/components/ProductCard';
+import {
+  getProductoBySlugSupabase,
+  getAllProductosSupabase,
+  Producto,
+  ProductoListItem,
+} from '@/services/supabase';
 
 interface ProductoDetailPageProps {
   params: Promise<{ slug: string }>;
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export async function generateStaticParams() {
-  const productos = await getProducts();
-
+  const productos: ProductoListItem[] = await getAllProductosSupabase();
   if (!productos || productos.length === 0) {
     return [];
   }
-
-  return productos.map((producto: ProductPost) => ({
+  return productos.map(producto => ({
     slug: producto.slug,
   }));
 }
 
 export async function generateMetadata({ params }: ProductoDetailPageProps): Promise<Metadata> {
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
-  const producto = await getProductBySlug(slug);
+  const { slug } = await params;
+  const producto: Producto | null = await getProductoBySlugSupabase(slug);
 
   if (!producto) {
     return {
       title: 'Producto no encontrado | Corpinveca',
+      description: 'El producto solicitado no existe o no está disponible.',
     };
   }
 
@@ -44,44 +48,30 @@ export async function generateMetadata({ params }: ProductoDetailPageProps): Pro
 }
 
 export default async function ProductoDetailPage({ params }: ProductoDetailPageProps) {
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
-  const producto = await getProductBySlug(slug);
+  const { slug } = await params;
+  const producto: Producto | null = await getProductoBySlugSupabase(slug);
 
   if (!producto) {
     notFound();
   }
 
-  // Preparar datos para JSON-LD
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.corpinveca.com';
-  const canonicalUrl = `${siteUrl}/productos/${producto.slug}`;
+  const cleanDescription =
+    producto.excerpt?.replace(/<[^>]*>?/gm, '').trim() ||
+    producto.content
+      ?.replace(/<[^>]*>?/gm, '')
+      .substring(0, 250)
+      .trim() + '...' ||
+    `Detalles sobre el producto ${slug} ofrecido por Corpinveca.`;
 
-  // Limpiar la descripción de HTML y truncarla si es necesario
-  let cleanDescription = '';
-  if (producto.excerpt) {
-    cleanDescription = producto.excerpt.replace(/<[^>]*>?/gm, '').trim();
-  } else if (producto.content) {
-    cleanDescription =
-      producto.content
-        .replace(/<[^>]*>?/gm, '')
-        .substring(0, 250)
-        .trim() + '...';
-  } else {
-    cleanDescription = `Detalles sobre el producto ${producto.title} ofrecido por Corpinveca.`;
-  }
-  if (cleanDescription.length > 160) {
-    cleanDescription = cleanDescription.substring(0, 157).trim() + '...';
-  }
-
-  // Construir el objeto JSON-LD
   const productoJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: producto.title,
     description: cleanDescription,
-    image: producto.featuredImage?.node?.sourceUrl || `${siteUrl}/placeholder-product-image.jpg`,
-    sku: producto.camposDeProducto?.numeroDeParteSku || undefined,
-    mpn: producto.camposDeProducto?.numeroDeParteSku || undefined,
+    image: producto.featured_image_url || `${siteUrl}/placeholder-product-image.jpg`,
+    sku: producto.sku || undefined,
+    mpn: producto.sku || undefined,
     brand: {
       '@type': 'Brand',
       name: 'Corpinveca',
@@ -89,9 +79,9 @@ export default async function ProductoDetailPage({ params }: ProductoDetailPageP
     offers: {
       '@type': 'Offer',
       priceCurrency: 'USD',
-      price: producto.camposDeProducto?.precio?.toString() || '0.00',
-      availability: 'https://schema.org/InStock',
-      url: canonicalUrl,
+      price: producto.precio?.toString() || '0.00',
+      availability: producto ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      url: `${siteUrl}/productos/${slug}`,
       seller: {
         '@type': 'Organization',
         name: 'Corpinveca',
@@ -108,7 +98,6 @@ export default async function ProductoDetailPage({ params }: ProductoDetailPageP
       <div className="bg-white min-h-[calc(100vh-80px)]">
         <div className="container mx-auto px-4 py-12 md:py-16 lg:py-20">
           <h1 className="text-4xl font-bold text-center mb-12 text-gray-900">{producto.title}</h1>
-
           <ProductCard
             producto={producto}
             displayMode="detail"

@@ -1,85 +1,80 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getServiceBySlug, getServices } from '@/services/wordpress';
+import { getServicioBySlugSupabase, getAllServiciosSupabase, Servicio } from '@/services/supabase';
 import ServiceCard from '@/components/ServiceCard';
-import { Servicio } from '@/services/wordpress';
 
 interface ServicioDetailPageProps {
   params: Promise<{ slug: string }>;
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export async function generateMetadata({ params }: ServicioDetailPageProps): Promise<Metadata> {
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
-  const servicio = await getServiceBySlug(slug);
+  const { slug } = await params;
+  const servicio: Servicio | null = await getServicioBySlugSupabase(slug);
 
   if (!servicio) {
-    return {
-      title: 'Servicio no encontrado',
-    };
+    return { title: 'Servicio no encontrado | Corpinveca' };
+  }
+
+  const pageTitle = `${servicio.title} | Servicios Corpinveca`;
+  let pageDescription =
+    servicio.excerpt?.replace(/<[^>]*>?/gm, '') ||
+    servicio.content?.substring(0, 155).replace(/<[^>]*>?/gm, '') ||
+    `Información sobre el servicio ${servicio.title}`;
+
+  if (pageDescription.length > 160) {
+    pageDescription = pageDescription.substring(0, 157).trim() + '...';
   }
 
   return {
-    title: servicio.title,
-    description: servicio.excerpt,
+    title: pageTitle,
+    description: pageDescription,
   };
 }
 
 export async function generateStaticParams() {
-  const servicios = await getServices();
-
-  return servicios.map((servicio: Servicio) => ({
+  const servicios = await getAllServiciosSupabase();
+  if (!servicios || servicios.length === 0) {
+    return [];
+  }
+  return servicios.map(servicio => ({
     slug: servicio.slug,
   }));
 }
 
 export default async function ServicioDetailPage({ params }: ServicioDetailPageProps) {
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
-  const servicio = await getServiceBySlug(slug);
+  const { slug } = await params;
+  const servicio: Servicio | null = await getServicioBySlugSupabase(slug);
 
   if (!servicio) {
     notFound();
   }
 
-  // Preparar datos para JSON-LD
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.corpinveca.com';
   const canonicalUrl = `${siteUrl}/servicios/${servicio.slug}`;
 
-  // Limpiar la descripción de HTML y truncarla si es necesario
-  let cleanDescription = '';
-  if (servicio.excerpt) {
-    cleanDescription = servicio.excerpt.replace(/<[^>]*>?/gm, '').trim();
-  } else if (servicio.content) {
-    cleanDescription =
-      servicio.content
-        .replace(/<[^>]*>?/gm, '')
-        .substring(0, 250)
-        .trim() + '...';
-  } else {
-    cleanDescription = `Información sobre el servicio ${servicio.title} ofrecido por Corpinveca.`;
+  // Preparar descripción para JSON-LD
+  let cleanDescription =
+    servicio.excerpt?.replace(/<[^>]*>?/gm, '') ||
+    servicio.content?.substring(0, 250).replace(/<[^>]*>?/gm, '') ||
+    `Detalles sobre ${servicio.title}`;
+
+  if (servicio.alcance_del_servicio) {
+    cleanDescription += ` Alcance: ${servicio.alcance_del_servicio.replace(/<[^>]*>?/gm, '').trim()}`;
   }
 
-  // Añadir el alcance del servicio si está disponible
-  if (servicio.camposDeServicio?.alcanceDelServicio) {
-    cleanDescription += ` Alcance: ${servicio.camposDeServicio.alcanceDelServicio.replace(/<[^>]*>?/gm, '').trim()}`;
-  }
-
-  // Recortar la descripción si es muy larga
   if (cleanDescription.length > 300) {
     cleanDescription = cleanDescription.substring(0, 297).trim() + '...';
   }
 
-  // Construir el objeto JSON-LD
   const servicioJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Service',
     name: servicio.title,
     description: cleanDescription,
     image:
-      servicio.featuredImage?.node?.sourceUrl ||
-      servicio.camposDeServicio?.iconoDelServicio?.node?.sourceUrl ||
+      servicio.featured_image_url ||
+      servicio.icono_url ||
       `${siteUrl}/placeholder-service-image.jpg`,
     url: canonicalUrl,
     provider: {
@@ -93,16 +88,17 @@ export default async function ServicioDetailPage({ params }: ServicioDetailPageP
       '@type': 'Country',
       name: 'Venezuela',
     },
-    ...(servicio.camposDeServicio?.precio && typeof servicio.camposDeServicio.precio === 'number'
+    ...(servicio.precio && typeof servicio.precio === 'number'
       ? {
           offers: {
             '@type': 'Offer',
             priceCurrency: 'USD',
-            price: servicio.camposDeServicio.precio.toString(),
+            price: servicio.precio.toString(),
             url: canonicalUrl,
             seller: {
               '@type': 'Organization',
               name: 'Corpinveca',
+              url: siteUrl,
             },
           },
         }
@@ -114,8 +110,7 @@ export default async function ServicioDetailPage({ params }: ServicioDetailPageP
         urlTemplate: `${siteUrl}/solicitud?servicio=${encodeURIComponent(servicio.title)}`,
         actionPlatform: [
           'https://schema.org/DesktopWebPlatform',
-          'https://schema.org/IOSPlatform',
-          'https://schema.org/AndroidPlatform',
+          'https://schema.org/MobileWebPlatform',
         ],
       },
       name: `Solicitar ${servicio.title}`,
@@ -128,16 +123,31 @@ export default async function ServicioDetailPage({ params }: ServicioDetailPageP
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(servicioJsonLd, null, 2) }}
       />
-      <div className="bg-white min-h-[calc(100vh-80px)]">
-        <div className="container mx-auto px-4 py-12 md:py-16 lg:py-20">
-          <h1 className="text-4xl font-bold text-center mb-12 text-gray-900">{servicio.title}</h1>
+      <div className="bg-white min-h-screen">
+        <section className="pt-24 pb-12 md:pt-32 md:pb-16 lg:pt-40 lg:pb-20 bg-gray-100">
+          <div className="container mx-auto px-4 text-center">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-dark mb-4">
+              {servicio.title}
+            </h1>
+            {servicio.excerpt && (
+              <p className="text-base sm:text-lg text-body-color max-w-2xl mx-auto">
+                {servicio.excerpt.replace(/<[^>]*>?/gm, '')}
+              </p>
+            )}
+          </div>
+        </section>
 
-          <ServiceCard
-            servicio={servicio}
-            displayMode="detail"
-            containerClassName="max-w-sm mx-auto"
-          />
-        </div>
+        <section className="py-16 md:py-20 lg:py-24">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto">
+              <ServiceCard
+                servicio={servicio}
+                displayMode="detail"
+                containerClassName="max-w-3xl mx-auto"
+              />
+            </div>
+          </div>
+        </section>
       </div>
     </>
   );

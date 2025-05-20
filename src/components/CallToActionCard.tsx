@@ -20,8 +20,8 @@ export default function CallToActionCard({
   linkHref,
 }: CallToActionCardProps) {
   return (
-    <div className="group flex flex-col sm:flex-row bg-sky-100 rounded-xl shadow-lg hover:shadow-2xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-2 border border-transparent hover:border-accent min-h-[200px] h-full">
-      <div className="w-full sm:w-1/3 h-48 sm:h-full relative">
+    <div className="card card-compact w-full bg-custom-rey text-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 group h-full flex flex-col">
+      <figure className="relative w-full h-48 bg-gray-700">
         <Image
           src={imageSrc}
           alt={imageAlt}
@@ -29,19 +29,16 @@ export default function CallToActionCard({
           className="object-cover"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
-      </div>
-      <div className="w-full sm:w-2/3 p-5 flex flex-col justify-between">
-        <div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors duration-300">
-            {title}
-          </h3>
-          <p className="text-gray-700 text-sm mb-4">{description}</p>
-        </div>
-        <div className="mt-auto">
-          <Link href={linkHref} className="btn btn-accent btn-sm md:btn-md self-start sm:self-auto">
-            {buttonText}
-          </Link>
-        </div>
+      </figure>
+      <div className="card-body p-4 flex flex-col flex-grow">
+        <h3 className="card-title text-xl font-bold text-white mb-3">{title}</h3>
+        <p className="text-gray-200 text-sm mb-4 flex-grow">{description}</p>
+        <Link
+          href={linkHref}
+          className="btn bg-custom-naranja text-white border-transparent hover:bg-white hover:text-black hover:border-black btn-sm mt-auto w-full sm:w-auto"
+        >
+          {buttonText}
+        </Link>
       </div>
     </div>
   );

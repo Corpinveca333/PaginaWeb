@@ -10,11 +10,24 @@ const nextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'http',
-        hostname: 'localhost',
+        protocol: 'https',
+        hostname: 'f17a-2800-300-6f33-170-256c-e994-2801-e3a8.ngrok-free.app',
         port: '',
-        pathname: '/corpinveca/wp-content/uploads/**',
+        pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'example.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.app.goo.gl',
+        port: '',
+        pathname: '/**',
+      },
+      // Permite cargar imágenes desde enlaces de redirección de Google Images
       // Puedes añadir más patrones aquí para otros dominios si los necesitas
     ],
   },
@@ -44,4 +57,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig; 
+module.exports = nextConfig;

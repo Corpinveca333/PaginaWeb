@@ -15,8 +15,8 @@ export default function DifferentiatorItem({
   description,
 }: DifferentiatorItemProps) {
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-1.5 h-full">
-      <div className="relative w-full h-48">
+    <div className="card card-compact w-full bg-custom-rey text-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 group h-full flex flex-col">
+      <div className="relative w-full h-48 bg-gray-700">
         <Image
           src={imageSrc}
           alt={imageAlt}
@@ -26,8 +26,10 @@ export default function DifferentiatorItem({
         />
       </div>
       <div className="p-6 flex flex-col flex-grow">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
-        <p className="text-gray-700 text-sm flex-grow">{description}</p>
+        <h3 className="card-title text-lg font-bold text-white mb-2 group-hover:text-orange-300 transition-colors duration-300">
+          {title}
+        </h3>
+        <p className="text-gray-200 text-sm flex-grow">{description}</p>
       </div>
     </div>
   );

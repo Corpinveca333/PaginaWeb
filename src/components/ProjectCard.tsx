@@ -4,10 +4,10 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import DOMPurify from 'dompurify';
-import { ProyectoNode } from '@/services/wordpress';
+import { Proyecto, ProyectoListItem } from '@/services/supabase';
 
 interface ProjectCardProps {
-  proyecto: ProyectoNode;
+  proyecto: Proyecto | ProyectoListItem | null | undefined;
   displayMode?: 'list' | 'detail';
   containerClassName?: string;
 }
@@ -17,33 +17,58 @@ export default function ProjectCard({
   displayMode = 'list',
   containerClassName = '',
 }: ProjectCardProps) {
-  const { id, title, slug, date, excerpt, content, featuredImage, camposDeProyecto } = proyecto;
-  const cliente = camposDeProyecto?.cliente;
-  const fechaDeRealizacion = camposDeProyecto?.fechaDeRealizacion;
-  const detallesAlcanceOriginal = camposDeProyecto?.detallesalcanceDelProyecto;
-  const imagenAdicional = camposDeProyecto?.galeriaDeImagenes;
-
   // Estados para el HTML sanitizado
   const [sanitizedExcerpt, setSanitizedExcerpt] = useState('');
   const [sanitizedContent, setSanitizedContent] = useState('');
   const [sanitizedDetallesAlcance, setSanitizedDetallesAlcance] = useState('');
 
   useEffect(() => {
-    // Asegurarse de que DOMPurify solo se ejecute en el cliente
-    if (typeof window !== 'undefined') {
-      setSanitizedExcerpt(DOMPurify.sanitize(excerpt || '', { USE_PROFILES: { html: true } }));
-      setSanitizedContent(DOMPurify.sanitize(content || '', { USE_PROFILES: { html: true } }));
-      setSanitizedDetallesAlcance(
-        DOMPurify.sanitize(detallesAlcanceOriginal || '', { USE_PROFILES: { html: true } })
-      );
+    if (typeof window !== 'undefined' && proyecto) {
+      if (displayMode === 'list') {
+        setSanitizedExcerpt(
+          DOMPurify.sanitize(proyecto.excerpt || '', { USE_PROFILES: { html: true } })
+        );
+      } else {
+        const content = (proyecto as Proyecto).content;
+        const detallesAlcance = (proyecto as Proyecto).detalles_alcance;
+        setSanitizedContent(DOMPurify.sanitize(content || '', { USE_PROFILES: { html: true } }));
+        setSanitizedDetallesAlcance(
+          DOMPurify.sanitize(detallesAlcance || '', { USE_PROFILES: { html: true } })
+        );
+      }
     }
-  }, [excerpt, content, detallesAlcanceOriginal]);
+  }, [proyecto, displayMode]);
 
-  const imageUrl = featuredImage?.node?.sourceUrl || '/placeholder-project-image.jpg';
+  if (!proyecto) {
+    return (
+      <div className={`card card-compact w-full bg-base-100 shadow-xl ${containerClassName}`}>
+        <div className="flex flex-col items-center justify-center p-4 min-h-[300px]">
+          <p className="text-gray-500">Cargando proyecto...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Campos comunes
+  const { id, title, slug, excerpt, featured_image_url, cliente, fecha_de_realizacion } = proyecto;
+
+  // Campos específicos del modo detalle
+  const content =
+    displayMode === 'detail' && 'content' in proyecto ? (proyecto as Proyecto).content : null;
+  const detallesAlcanceOriginal =
+    displayMode === 'detail' && 'detalles_alcance' in proyecto
+      ? (proyecto as Proyecto).detalles_alcance
+      : null;
+  const imagenAdicionalUrl =
+    displayMode === 'detail' && 'imagen_adicional_url' in proyecto
+      ? (proyecto as Proyecto).imagen_adicional_url
+      : null;
+
+  const imageUrl = featured_image_url || '/placeholder-project-image.jpg';
   const baseUrl = 'proyectos';
 
-  const fechaFormateada = fechaDeRealizacion
-    ? new Date(fechaDeRealizacion).toLocaleDateString('es-CL', {
+  const fechaFormateada = fecha_de_realizacion
+    ? new Date(fecha_de_realizacion).toLocaleDateString('es-ES', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -58,7 +83,7 @@ export default function ProjectCard({
         <Link href={`/${baseUrl}/${slug}`} className="block w-full h-full">
           <Image
             src={imageUrl}
-            alt={featuredImage?.node?.altText || title}
+            alt={title || 'Imagen del proyecto'}
             fill
             className="object-cover"
             sizes={
@@ -93,14 +118,17 @@ export default function ProjectCard({
         )}
 
         {displayMode === 'detail' && sanitizedDetallesAlcance && (
-          <div
-            className="text-sm text-gray-300 mt-1 mb-3 prose prose-sm max-w-none prose-invert"
-            dangerouslySetInnerHTML={{ __html: sanitizedDetallesAlcance }}
-          />
+          <div className="mt-2">
+            <h4 className="text-xs font-semibold text-gray-200 mb-1">Detalles del Alcance:</h4>
+            <div
+              className="text-sm text-gray-300 prose prose-sm max-w-none prose-invert"
+              dangerouslySetInnerHTML={{ __html: sanitizedDetallesAlcance }}
+            />
+          </div>
         )}
 
         {cliente && (
-          <p className="text-xs text-gray-400 mb-1">
+          <p className="text-xs text-gray-400 mt-2 mb-1">
             <span className="font-semibold">Cliente:</span> {cliente}
           </p>
         )}
@@ -111,13 +139,13 @@ export default function ProjectCard({
           </p>
         )}
 
-        {displayMode === 'detail' && imagenAdicional?.node?.sourceUrl && (
+        {displayMode === 'detail' && imagenAdicionalUrl && (
           <div className="mt-4">
             <h3 className="text-sm font-semibold text-gray-200 mb-2">Imagen Adicional:</h3>
             <div className="relative aspect-video w-full">
               <Image
-                src={imagenAdicional.node.sourceUrl}
-                alt={imagenAdicional.node.altText || 'Imagen adicional del proyecto'}
+                src={imagenAdicionalUrl}
+                alt={`Imagen adicional de ${title || 'proyecto'}`}
                 fill
                 className="object-cover rounded"
                 sizes="(max-width: 640px) 90vw, 360px"

@@ -5,10 +5,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import DOMPurify from 'dompurify';
 import AddToRequestButton from './AddToRequestButton';
-import { ProductPost, Producto } from '@/services/wordpress';
+import { Producto } from '@/services/supabase';
 
 interface ProductCardProps {
-  producto: ProductPost | Producto;
+  producto: Producto | null | undefined;
   displayMode?: 'list' | 'detail';
   containerClassName?: string;
 }
@@ -18,43 +18,56 @@ export default function ProductCard({
   displayMode = 'list',
   containerClassName = '',
 }: ProductCardProps) {
-  const { id, title, slug, featuredImage, camposDeProducto, excerpt, content } = producto;
-
-  // Estados para el HTML sanitizado
+  // Estados para el HTML sanitizado (deben estar fuera de cualquier condición)
   const [sanitizedExcerpt, setSanitizedExcerpt] = useState('');
   const [sanitizedContent, setSanitizedContent] = useState('');
 
+  // Desestructuración segura
+  const id = producto?.id;
+  const title = producto?.title;
+  const slug = producto?.slug;
+  const excerpt = producto?.excerpt;
+  const content = producto?.content;
+  const featured_image_url = producto?.featured_image_url;
+  const precio = producto?.precio;
+  const sku = producto?.sku;
+
   useEffect(() => {
-    // Asegurarse de que DOMPurify solo se ejecute en el cliente
     if (typeof window !== 'undefined') {
       setSanitizedExcerpt(DOMPurify.sanitize(excerpt || '', { USE_PROFILES: { html: true } }));
       setSanitizedContent(DOMPurify.sanitize(content || '', { USE_PROFILES: { html: true } }));
     }
   }, [excerpt, content]);
 
-  const imageUrl = featuredImage?.node?.sourceUrl || '/placeholder-product-image.jpg';
-  const price = camposDeProducto?.precio;
-  const sku = camposDeProducto?.numeroDeParteSku;
+  const imageUrl = featured_image_url || '/placeholder-product-image.jpg';
   const baseUrl = 'productos';
 
   const itemDataForButton = {
-    id: id,
-    name: title,
-    price: price,
-    sku: sku || 'PRODUCTO',
+    id: id!,
+    name: title || 'Producto sin nombre',
+    price: typeof precio === 'number' ? precio : undefined,
+    sku: sku || `PROD-${id!}`,
     image: imageUrl,
-    slug: slug,
+    slug: slug || '',
   };
 
-  const cardClasses = `card card-compact w-full bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1 ${containerClassName}`;
+  const cardClasses = `card card-compact w-full bg-custom-rey text-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 h-full flex flex-col ${containerClassName}`;
+
+  if (!producto) {
+    return (
+      <div className={`card card-compact w-full bg-base-100 shadow-xl ${containerClassName}`}>
+        <p className="text-gray-500">Información del producto no disponible.</p>
+      </div>
+    );
+  }
 
   return (
     <div className={cardClasses}>
-      <figure className="relative h-56 bg-gray-200">
-        <Link href={`/${baseUrl}/${slug}`} className="block w-full h-full">
+      <figure className="relative h-48 sm:h-56 bg-gray-700">
+        <Link href={slug ? `/${baseUrl}/${slug}` : '#'} className="block w-full h-full">
           <Image
             src={imageUrl}
-            alt={title}
+            alt={title || 'Imagen del producto'}
             fill
             className="object-cover"
             sizes={
@@ -67,47 +80,67 @@ export default function ProductCard({
         </Link>
       </figure>
 
-      <div className="card-body p-4">
-        <h2 className="card-title text-lg font-bold text-gray-900">
-          <Link href={`/${baseUrl}/${slug}`} className="hover:text-accent transition-colors">
-            {title}
+      <div className="card-body p-4 flex flex-col flex-grow">
+        <h2 className="card-title text-lg font-bold text-white">
+          <Link
+            href={slug ? `/${baseUrl}/${slug}` : '#'}
+            className="hover:text-custom-naranja transition-colors"
+          >
+            {title || 'Producto sin nombre'}
           </Link>
         </h2>
 
         {displayMode === 'list' && sanitizedExcerpt && (
           <div
-            className="text-sm text-gray-600 mt-1 mb-3 line-clamp-3 flex-grow"
-            dangerouslySetInnerHTML={{ __html: sanitizedExcerpt }}
+            className="text-sm text-gray-300 mt-1 mb-3 line-clamp-3 prose prose-sm max-w-none prose-invert flex-grow"
+            dangerouslySetInnerHTML={{
+              __html: sanitizedExcerpt || '<p>Descripción no disponible.</p>',
+            }}
           />
         )}
 
         {displayMode === 'detail' && sanitizedContent && (
           <div
-            className="text-sm text-gray-600 mt-1 mb-3 flex-grow"
-            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+            className="text-sm text-gray-300 mt-1 mb-3 prose prose-sm max-w-none prose-invert flex-grow"
+            dangerouslySetInnerHTML={{
+              __html: sanitizedContent || '<p>Contenido detallado no disponible.</p>',
+            }}
           />
         )}
 
-        {price !== undefined && typeof price === 'number' && (
-          <p className="text-xl font-semibold text-primary mb-2">
-            {Number(price).toLocaleString('en-US', {
+        {typeof precio === 'number' ? (
+          <p className="text-xl font-semibold text-white my-2">
+            {Number(precio).toLocaleString('en-US', {
               style: 'currency',
               currency: 'USD',
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
           </p>
+        ) : (
+          <p className="text-sm text-gray-400 mb-2">Precio no disponible</p>
         )}
 
-        {sku && <p className="text-xs text-gray-500 mb-3">SKU: {sku}</p>}
+        {sku ? (
+          <p className="text-xs text-gray-400 mb-3">SKU: {sku}</p>
+        ) : (
+          <p className="text-xs text-gray-400 mb-3">SKU: N/A</p>
+        )}
 
-        <div className="card-actions justify-end items-center mt-auto pt-2 gap-2 flex-wrap">
+        <div className="card-actions justify-end items-center mt-auto pt-2 flex flex-wrap space-x-6">
           {displayMode === 'list' && (
-            <Link href={`/${baseUrl}/${slug}`} className="btn btn-sm btn-outline btn-primary">
+            <Link
+              href={slug ? `/${baseUrl}/${slug}` : '#'}
+              className="btn bg-custom-naranja text-white border-transparent hover:bg-white hover:text-black hover:border-black text-xs px-3 py-1.5"
+              style={{ fontSize: '0.85rem' }}
+            >
               Ver Detalles
             </Link>
           )}
-          <AddToRequestButton item={itemDataForButton} className="btn-sm btn-accent" />
+          <AddToRequestButton
+            item={itemDataForButton}
+            className="text-xs px-3 py-1.5 bg-custom-naranja text-white border-transparent hover:bg-white hover:text-black hover:border-black"
+          />
         </div>
       </div>
     </div>

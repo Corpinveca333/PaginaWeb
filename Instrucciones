@@ -1,1 +1,124 @@
-Reglas Fijas: Desarrollo Frontend Next.js con Cursor (Proyecto Corpinveca)Estas directrices aseguran consistencia, legibilidad y mantenibilidad en nuestro código frontend generado con Cursor. Debemos referenciarlas o aplicarlas implícitamente en nuestros prompts.1. Estructura del Proyecto (Next.js App Router):Componentes Reutilizables: Todos los componentes de UI reutilizables deben ir dentro del directorio src/components/. Cada componente en su propia carpeta (ej: src/components/Button/Button.tsx) o archivo (ej: src/components/Header.tsx) si es simple.Páginas/Rutas: Definidas por carpetas dentro de src/app/. Cada ruta principal tiene su carpeta con un archivo page.tsx (ej: src/app/servicios/page.tsx). Rutas dinámicas usan corchetes (ej: src/app/blog/[slug]/page.tsx).Layouts: El layout principal está en src/app/layout.tsx. Layouts específicos para secciones van en archivos layout.tsx dentro de las carpetas de ruta correspondientes.Lógica de API/Fetching: Funciones para interactuar con la API de WordPress pueden agruparse en src/lib/ o src/services/ (ej: src/lib/api.ts).Tipos: Interfaces y tipos de TypeScript reutilizables pueden ir en src/types/ o definirse cerca de donde se usan si son específicos.Estilos Globales: En src/app/globals.css (principalmente para configuración de Tailwind y fuentes base).2. Lenguajes y Tecnologías:Lenguaje Principal: TypeScript (.tsx para componentes React, .ts para lógica pura). Exigir tipado explícito para props, estado y variables complejas.Framework: Next.js (usando el App Router). Aprovechar Server Components por defecto y usar Client Components ('use client';) solo cuando sea necesario (hooks de estado, efectos, interactividad del navegador).Estilos: Tailwind CSS exclusivamente para estilizar componentes. Evitar CSS personalizado o archivos CSS Modules a menos que sea absolutamente necesario para efectos muy complejos no logrables con Tailwind.Formato y Linting: Prettier para formateo automático y ESLint para análisis de código. (Nos aseguraremos de que estén configurados).3. Nomenclatura:Componentes: PascalCase (ej: UserProfileCard, MainNavigation). Nombres descriptivos de su función.Archivos de Componentes: PascalCase, coincidiendo con el nombre del componente (ej: Button.tsx).Variables y Funciones: camelCase (ej: userName, fetchPostsData).Tipos/Interfaces: PascalCase (ej: interface PostData, type UserId).Archivos CSS/Otros: kebab-case (ej: global-styles.css) - Aunque intentaremos no usarlos.4. Componentes React:Funcionales: Usar siempre componentes funcionales, no basados en clases.Hooks: Usar hooks de React (useState, useEffect, useContext, etc.) y hooks personalizados para lógica reutilizable.Props: Definir interfaces claras (TypeScript) para las props. Desestructurar props en la firma de la función.Reutilización: Diseñar componentes para ser lo más reutilizables posible. Evitar lógica de negocio específica dentro de componentes de UI genéricos.Tamaño: Mantener componentes pequeños y enfocados en una sola responsabilidad (Single Responsibility Principle). Extraer sub-componentes si uno crece mucho.Server vs Client: Ser consciente de dónde se renderiza el componente (Servidor por defecto, Cliente con 'use client';). Realizar fetching de datos en Server Components siempre que sea posible.5. Estilo (Tailwind CSS):Clases de Utilidad: Usar las clases de utilidad de Tailwind directamente en el JSX.Consistencia: Definir y usar valores consistentes del tema de Tailwind (colores, espaciado, fuentes configurados en tailwind.config.ts).Responsividad: Aplicar clases responsivas (sm:, md:, lg:) para asegurar adaptabilidad. Enfoque Mobile-First.Estados: Usar prefijos de estado (hover:, focus:, group-hover:, etc.) para interactividad.Clases Arbitrarias []: Usar con moderación, solo para propiedades CSS específicas no cubiertas por utilidades estándar.6. Interacción con API (WordPress):Funciones Dedicadas: Encapsular la lógica de fetch (o librerías como axios o clientes GraphQL) en funciones reutilizables (ej: en src/lib/api.ts).Variables de Entorno: Guardar la URL base de la API en .env.local (NEXT_PUBLIC_WORDPRESS_API_URL, NEXT_PUBLIC_WORDPRESS_GRAPHQL_ENDPOINT) y acceder vía process.env. Nunca hardcodear URLs en el código.Manejo de Errores: Implementar try/catch en las funciones de fetching y manejar estados de carga/error en los componentes que consumen los datos.Tipado de Datos API: Definir interfaces TypeScript para la estructura de datos esperada de la API.7. Prompts para Cursor:Contexto: Siempre recordar a Cursor la stack (Next.js, TS, Tailwind, App Router, Headless WP).Especificidad: Ser muy específico sobre qué componente/función crear, dónde debe ir (src/...), qué props necesita (con tipos TS), qué debe hacer y cómo debe verse (con detalles de Tailwind).Referenciar Reglas: Mencionar explícitamente las reglas si es necesario (ej: "Asegúrate de usar HTML semántico", "Aplica estilos responsivos con Tailwind", "Tipa las props con una interfaz TS").Iteración: Pedir una versión inicial y luego refinarla con prompts de seguimiento ("Refactoriza esto...", "Añade manejo de errores...", "Aplica estos estilos hover...").Uso de @: Utilizar @ para referenciar archivos o símbolos existentes y dar contexto directo a Cursor.Al seguir estas "reglas fijas" a través de nuestros prompts y configuración de herramientas, aseguraremos que el código generado por Cursor sea consistente, de alta calidad y alineado con las mejores prácticas para nuestro proyecto específico.
+# Instrucciones de Desarrollo
+
+## Estructura del Proyecto
+
+1. **Componentes**:
+
+   - Ubicar en `src/components/`
+   - Organizar por funcionalidad o tipo
+   - Usar nombres descriptivos
+   - Mantener componentes pequeños y reutilizables
+
+2. **Páginas**:
+
+   - Ubicar en `src/app/`
+   - Seguir la estructura de rutas de Next.js
+   - Usar layouts cuando sea necesario
+   - Mantener la lógica de negocio en servicios
+
+3. **Servicios**:
+
+   - Ubicar en `src/services/`
+   - Separar por dominio o funcionalidad
+   - Encapsular lógica de API
+   - Manejar errores y estados de carga
+
+4. **Tipos**:
+
+   - Definir interfaces y tipos en `src/types/`
+   - Usar nombres descriptivos
+   - Documentar tipos complejos
+   - Mantener tipos actualizados
+
+5. **Estilos**:
+   - Usar Tailwind CSS
+   - Seguir el sistema de diseño
+   - Mantener consistencia
+   - Usar variables de tema
+
+## Convenciones de Código
+
+1. **Nombres**:
+
+   - Usar PascalCase para componentes
+   - Usar camelCase para funciones y variables
+   - Usar UPPER_CASE para constantes
+   - Usar nombres descriptivos
+
+2. **Componentes**:
+
+   - Usar componentes funcionales
+   - Usar hooks de React
+   - Mantener componentes pequeños
+   - Documentar props
+
+3. **Estilos**:
+
+   - Usar clases de Tailwind
+   - Mantener consistencia
+   - Usar variables de tema
+   - Seguir el sistema de diseño
+
+4. **API**:
+   - Usar servicios dedicados
+   - Manejar errores
+   - Usar tipos TypeScript
+   - Documentar endpoints
+
+## Buenas Prácticas
+
+1. **Código**:
+
+   - Mantener código limpio
+   - Usar TypeScript
+   - Documentar código
+   - Seguir principios SOLID
+
+2. **Rendimiento**:
+
+   - Optimizar imágenes
+   - Usar lazy loading
+   - Minimizar re-renders
+   - Optimizar bundle size
+
+3. **SEO**:
+
+   - Usar metadatos
+   - Optimizar títulos
+   - Usar descripciones
+   - Implementar schema.org
+
+4. **Accesibilidad**:
+   - Usar semántica HTML
+   - Mantener contraste
+   - Usar ARIA labels
+   - Probar con lectores
+
+## Flujo de Trabajo
+
+1. **Desarrollo**:
+
+   - Crear rama feature
+   - Seguir convenciones
+   - Hacer commits descriptivos
+   - Revisar código
+
+2. **Testing**:
+
+   - Escribir tests
+   - Probar en diferentes navegadores
+   - Verificar responsive
+   - Probar accesibilidad
+
+3. **Despliegue**:
+
+   - Revisar cambios
+   - Verificar build
+   - Probar en staging
+   - Desplegar a producción
+
+4. **Mantenimiento**:
+   - Monitorear errores
+   - Actualizar dependencias
+   - Optimizar rendimiento
+   - Documentar cambios

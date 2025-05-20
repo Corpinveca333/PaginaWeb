@@ -208,7 +208,7 @@ export default function SolicitudPage() {
 
               <div className="form-control w-full">
                 <label className="label" htmlFor="fullName">
-                  <span className="label-text text-base-content font-bold">Nombre Completo*</span>
+                  <span className="label-text text-white font-bold">Nombre Completo*</span>
                 </label>
                 <input
                   id="fullName"
@@ -222,9 +222,7 @@ export default function SolicitudPage() {
 
               <div className="form-control w-full">
                 <label className="label" htmlFor="email">
-                  <span className="label-text text-base-content font-bold">
-                    Correo Electrónico*
-                  </span>
+                  <span className="label-text text-white font-bold">Correo Electrónico*</span>
                 </label>
                 <input
                   id="email"
@@ -238,7 +236,7 @@ export default function SolicitudPage() {
 
               <div className="form-control w-full">
                 <label className="label" htmlFor="phone">
-                  <span className="label-text text-base-content font-bold">Teléfono</span>
+                  <span className="label-text text-white font-bold">Teléfono</span>
                 </label>
                 <input
                   id="phone"
@@ -251,9 +249,7 @@ export default function SolicitudPage() {
 
               <div className="form-control w-full">
                 <label className="label" htmlFor="companyName">
-                  <span className="label-text text-base-content font-bold">
-                    Nombre de la Empresa
-                  </span>
+                  <span className="label-text text-white font-bold">Nombre de la Empresa</span>
                 </label>
                 <input
                   id="companyName"
@@ -266,7 +262,7 @@ export default function SolicitudPage() {
 
               <div className="form-control w-full">
                 <label className="label" htmlFor="message">
-                  <span className="label-text text-base-content font-bold">Mensaje Adicional</span>
+                  <span className="label-text text-white font-bold">Mensaje Adicional</span>
                 </label>
                 <textarea
                   id="message"
