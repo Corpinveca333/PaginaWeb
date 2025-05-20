@@ -1,9 +1,10 @@
 import { MetadataRoute } from 'next';
-import { getServices, getProducts, getAllProyectos } from '@/services/wordpress';
-
-// Asegúrate de que las interfaces/tipos para los nodos también estén disponibles si las necesitas aquí,
-// aunque para el sitemap solo usaremos 'slug' y 'date' o 'modified' de ellos.
-// import type { ServicioNode, ProductoNode, ProyectoNode } from '@/services/wordpress';
+import {
+  getAllServiciosSupabase,
+  getAllProductosSupabase,
+  getAllProyectosSupabase,
+} from '@/services/supabase';
+import type { ServicioListItem, Producto, ProyectoListItem } from '@/services/supabase';
 
 // Defino un tipo para las frecuencias de cambio válidas en Next.js
 type ChangeFrequency = 'yearly' | 'monthly' | 'weekly' | 'always' | 'hourly' | 'daily' | 'never';
@@ -63,29 +64,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // 3. URLs dinámicas para detalles de Servicios
-  const services = await getServices();
+  const services = await getAllServiciosSupabase();
   const serviceUrls: MetadataRoute.Sitemap = services.map(servicio => ({
     url: `${baseUrl}/servicios/${servicio.slug}`,
-    lastModified: servicio.date ? new Date(servicio.date) : new Date(),
+    lastModified: servicio.created_at ? new Date(servicio.created_at) : new Date(),
     changeFrequency: 'monthly' as ChangeFrequency,
     priority: 0.9,
   }));
 
   // 4. URLs dinámicas para detalles de Productos
-  const products = await getProducts();
+  const products = await getAllProductosSupabase();
   const productUrls: MetadataRoute.Sitemap = products.map(producto => ({
     url: `${baseUrl}/productos/${producto.slug}`,
-    lastModified: producto.date ? new Date(producto.date) : new Date(),
+    lastModified: producto.created_at ? new Date(producto.created_at) : new Date(),
     changeFrequency: 'monthly' as ChangeFrequency,
     priority: 0.9,
   }));
 
   // 5. URLs dinámicas para detalles de Proyectos
-  const proyectos = await getAllProyectos();
+  const proyectos = await getAllProyectosSupabase();
   const proyectoUrls: MetadataRoute.Sitemap = proyectos
     ? proyectos.map(proyecto => ({
         url: `${baseUrl}/proyectos/${proyecto.slug}`,
-        lastModified: proyecto.date ? new Date(proyecto.date) : new Date(),
+        lastModified: proyecto.created_at ? new Date(proyecto.created_at) : new Date(),
         changeFrequency: 'monthly' as ChangeFrequency,
         priority: 0.9,
       }))
