@@ -5,10 +5,13 @@ import ServiceCard from '@/components/ServiceCard';
 
 interface ServicioDetailPageProps {
   params: Promise<{ slug: string }>;
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export async function generateMetadata({ params }: ServicioDetailPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+  searchParams,
+}: ServicioDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
   const servicio: Servicio | null = await getServicioBySlugSupabase(slug);
 
@@ -42,7 +45,10 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function ServicioDetailPage({ params }: ServicioDetailPageProps) {
+export default async function ServicioDetailPage({
+  params,
+  searchParams,
+}: ServicioDetailPageProps) {
   const { slug } = await params;
   const servicio: Servicio | null = await getServicioBySlugSupabase(slug);
 
