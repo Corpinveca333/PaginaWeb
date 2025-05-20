@@ -5,7 +5,7 @@ import Image from 'next/image'; // Aunque no haya imagen destacada ahora, es bue
 import type { Metadata } from 'next';
 import { getPaginaBySlugSupabase, PaginaEstatica } from '@/services/supabase';
 import SafeHtmlRenderer from '@/components/SafeHtmlRenderer';
-import ContactForm from '@/components/ContactForm';
+// import ContactForm from '@/components/ContactForm'; // Eliminar importación del formulario
 
 // Función para generar metadatos dinámicos (título de la página)
 export async function generateMetadata(): Promise<Metadata> {
@@ -66,9 +66,9 @@ export default async function ContactoPage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 items-start">
             {/* Contact Form */}
-            <div className="bg-white rounded-lg shadow-lg p-8">
+            {/* <div className="bg-white rounded-lg shadow-lg p-8">
               <ContactForm />
-            </div>
+            </div> */}
 
             {/* Content */}
             <div className="bg-white rounded-lg shadow-lg p-8">
