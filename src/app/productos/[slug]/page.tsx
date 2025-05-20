@@ -13,7 +13,7 @@ import {
 
 interface ProductoDetailPageProps {
   params: Promise<{ slug: string }>;
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export async function generateStaticParams() {
@@ -26,7 +26,10 @@ export async function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }: ProductoDetailPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+  searchParams,
+}: ProductoDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
   const producto: Producto | null = await getProductoBySlugSupabase(slug);
 
@@ -47,7 +50,10 @@ export async function generateMetadata({ params }: ProductoDetailPageProps): Pro
   };
 }
 
-export default async function ProductoDetailPage({ params }: ProductoDetailPageProps) {
+export default async function ProductoDetailPage({
+  params,
+  searchParams,
+}: ProductoDetailPageProps) {
   const { slug } = await params;
   const producto: Producto | null = await getProductoBySlugSupabase(slug);
 
