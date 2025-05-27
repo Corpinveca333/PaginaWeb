@@ -7,11 +7,20 @@
  * Soporta tanto URLs con formato /uc?id= como enlaces completos compartidos
  */
 export function normalizeDriveUrl(url: string | null | undefined): string {
-    if (!url) return '/placeholder-service-image.jpg';
+    if (!url) return '/servicio01.jpg'; // Fallback a una imagen existente en public
+
+    // Si es una URL local, devolverla sin cambios
+    if (url.startsWith('/')) {
+        return url;
+    }
 
     // Si ya tiene el formato correcto, devolverlo tal cual
     if (url.includes('drive.google.com/uc?id=')) {
-        return getProxyImageUrl(url);
+        // Asegurarse de que tenga el parámetro export=view
+        if (!url.includes('export=view')) {
+            return `${url}&export=view`;
+        }
+        return url;
     }
 
     // Si es una URL de Google Drive en formato de compartir
@@ -19,8 +28,9 @@ export function normalizeDriveUrl(url: string | null | undefined): string {
         // Extraer el ID del archivo
         const idMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
         if (idMatch && idMatch[1]) {
-            const normalizedUrl = `https://drive.google.com/uc?id=${idMatch[1]}`;
-            return getProxyImageUrl(normalizedUrl);
+            const fileId = idMatch[1];
+            // Usar directamente la URL de Google Drive con export=view
+            return `https://drive.google.com/uc?id=${fileId}&export=view`;
         }
     }
 

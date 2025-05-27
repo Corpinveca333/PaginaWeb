@@ -6,7 +6,7 @@ import Link from 'next/link';
 import DOMPurify from 'dompurify';
 import { Servicio, ServicioListItem } from '@/services/supabase';
 import AddToRequestButton from './AddToRequestButton';
-import { normalizeDriveUrl, shouldSkipOptimization } from '@/lib/imageUtils';
+import { normalizeDriveUrl } from '@/lib/imageUtils';
 
 interface ServiceCardProps {
   servicio: Servicio | ServicioListItem | null | undefined;
@@ -58,8 +58,8 @@ export default function ServiceCard({
   const normalizedFeaturedImage = normalizeDriveUrl(featured_image_url);
   const normalizedIconoUrl = normalizeDriveUrl(icono_url);
 
-  // Determinar qué imagen mostrar
-  const imageUrl = normalizedFeaturedImage || '/placeholder-service-image.jpg';
+  // Determinar qué imagen mostrar (usar imagen local si no hay una válida)
+  const imageUrl = normalizedFeaturedImage || '/servicio01.jpg';
   const baseUrl = 'servicios';
 
   console.log('DEBUG_FEATURED_IMG:', featured_image_url);
@@ -98,7 +98,7 @@ export default function ServiceCard({
                 : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
             }
             priority={displayMode === 'detail'}
-            unoptimized={(normalizedIconoUrl || imageUrl)?.includes('drive.google.com')}
+            unoptimized={true}
           />
         </Link>
       </figure>
@@ -122,7 +122,7 @@ export default function ServiceCard({
                 fill
                 className="object-contain"
                 sizes="40px"
-                unoptimized={normalizedIconoUrl?.includes('drive.google.com')}
+                unoptimized={true}
               />
             </div>
           )}

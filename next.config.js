@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
+    domains: ['drive.google.com', 'lh3.googleusercontent.com'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -42,7 +43,7 @@ const nextConfig = {
       // Permite cargar imágenes desde enlaces de redirección de Google Images
       // Puedes añadir más patrones aquí para otros dominios si los necesitas
     ],
-    // Lista de dominios que no deben usar la optimización de imágenes
+    // Desactivar optimización para todas las imágenes externas
     unoptimized: true,
     dangerouslyAllowSVG: true,
   },
