@@ -24,6 +24,7 @@ export default function ServiceCard({
   const [sanitizedExcerpt, setSanitizedExcerpt] = useState('');
   const [sanitizedContent, setSanitizedContent] = useState('');
   const [sanitizedAlcance, setSanitizedAlcance] = useState('');
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && servicio) {
@@ -56,9 +57,13 @@ export default function ServiceCard({
   const { id, title, slug, featured_image_url, icono_url, precio } = servicio;
 
   // Obtener imágenes optimizadas (primero intentar Supabase, luego Google Drive)
-  // Asumimos que no hay imágenes en Supabase todavía, así que usamos null como primer parámetro
-  const imageUrl = getOptimizedImageUrl(null, featured_image_url);
-  const iconoUrl = getOptimizedImageUrl(null, icono_url);
+  // Comprobar si la URL es de Supabase o de Google Drive
+  const supabasePath =
+    featured_image_url && featured_image_url.includes('supabase.co') ? featured_image_url : null;
+  const iconoSupabasePath = icono_url && icono_url.includes('supabase.co') ? icono_url : null;
+
+  const imageUrl = getOptimizedImageUrl(supabasePath, featured_image_url);
+  const iconoUrl = getOptimizedImageUrl(iconoSupabasePath, icono_url);
 
   const baseUrl = 'servicios';
 
@@ -74,29 +79,42 @@ export default function ServiceCard({
 
   const cardClasses = `card card-compact w-full bg-custom-rey text-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 h-full flex flex-col ${containerClassName}`;
 
+  // Manejar errores de carga de imagen
+  const handleImageError = () => {
+    console.error('Error al cargar la imagen:', iconoUrl || imageUrl);
+    setImageError(true);
+  };
+
   return (
     <div className={cardClasses}>
       <figure className="relative h-48 sm:h-56 bg-gray-700">
         <Link href={`/${baseUrl}/${slug}`} className="block w-full h-full">
-          <Image
-            src={iconoUrl || imageUrl}
-            alt={title || 'Imagen del servicio'}
-            fill
-            className={
-              iconoUrl && displayMode === 'detail'
-                ? 'object-contain p-8'
-                : iconoUrl
-                  ? 'object-contain p-4'
-                  : 'object-cover'
-            }
-            sizes={
-              displayMode === 'detail'
-                ? '(max-width: 640px) 90vw, 360px'
-                : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
-            }
-            priority={displayMode === 'detail'}
-            unoptimized={true}
-          />
+          {imageError ? (
+            <div className="flex items-center justify-center w-full h-full">
+              <span className="text-gray-400">Imagen no disponible</span>
+            </div>
+          ) : (
+            <Image
+              src={iconoUrl || imageUrl}
+              alt={title || 'Imagen del servicio'}
+              fill
+              className={
+                iconoUrl && displayMode === 'detail'
+                  ? 'object-contain p-8'
+                  : iconoUrl
+                    ? 'object-contain p-4'
+                    : 'object-cover'
+              }
+              sizes={
+                displayMode === 'detail'
+                  ? '(max-width: 640px) 90vw, 360px'
+                  : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+              }
+              priority={displayMode === 'detail'}
+              unoptimized={true}
+              onError={handleImageError}
+            />
+          )}
         </Link>
       </figure>
 
@@ -111,7 +129,7 @@ export default function ServiceCard({
             </Link>
           </h2>
 
-          {iconoUrl && iconoUrl !== imageUrl && displayMode === 'list' && (
+          {iconoUrl && iconoUrl !== imageUrl && displayMode === 'list' && !imageError && (
             <div className="relative w-10 h-10 ml-3 flex-shrink-0">
               <Image
                 src={iconoUrl}
@@ -120,6 +138,7 @@ export default function ServiceCard({
                 className="object-contain"
                 sizes="40px"
                 unoptimized={true}
+                onError={handleImageError}
               />
             </div>
           )}

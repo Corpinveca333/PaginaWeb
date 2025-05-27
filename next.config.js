@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['drive.google.com', 'lh3.googleusercontent.com'],
+    domains: ['drive.google.com', 'lh3.googleusercontent.com', 'ymntsjedzdgalrjuzbgk.supabase.co'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -46,12 +46,27 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ymntsjedzdgalrjuzbgk.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/**',
+      },
       // Permite cargar imágenes desde enlaces de redirección de Google Images
       // Puedes añadir más patrones aquí para otros dominios si los necesitas
     ],
     // Desactivar optimización para todas las imágenes externas
     unoptimized: true,
     dangerouslyAllowSVG: true,
+    // Aumentar el tamaño máximo de imágenes permitido para imágenes grandes
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   webpack: (config, { isServer }) => {
     // Optimizaciones para la carga de chunks
