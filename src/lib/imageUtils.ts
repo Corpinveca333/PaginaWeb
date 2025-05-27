@@ -39,18 +39,24 @@ export function normalizeDriveUrl(url: string | null | undefined): string | null
 }
 
 /**
- * Devuelve una URL que usa el proxy de imágenes para servicios problemáticos
+ * Devuelve una URL para imágenes de servicios externos
+ * Ya no usa el proxy de imágenes eliminado, sino que devuelve la URL normalizada directamente
  */
 export function getProxyImageUrl(url: string): string {
     if (!url) return '/placeholder-service-image.jpg';
 
-    // Si ya es una URL local o no es de Google Drive, devolverla tal cual
-    if (url.startsWith('/') || (!url.includes('drive.google.com') && !url.includes('googleusercontent.com'))) {
+    // Si ya es una URL local, devolverla tal cual
+    if (url.startsWith('/')) {
         return url;
     }
 
-    // Usar el proxy para URLs de Google Drive y otros servicios problemáticos
-    return `/api/image-proxy?url=${encodeURIComponent(url)}`;
+    // Para URLs de Google Drive, usar la función de normalización
+    if (url.includes('drive.google.com') || url.includes('googleusercontent.com')) {
+        return normalizeDriveUrl(url) || url;
+    }
+
+    // Para cualquier otro caso, devolver la URL original
+    return url;
 }
 
 /**
@@ -58,11 +64,6 @@ export function getProxyImageUrl(url: string): string {
  */
 export function shouldSkipOptimization(url: string | null | undefined): boolean {
     if (!url) return false;
-
-    // Si es una URL de nuestro proxy, optimizar normalmente
-    if (url.startsWith('/api/image-proxy')) {
-        return false;
-    }
 
     // No optimizar imágenes de Google Drive
     if (url.includes('drive.google.com')) {

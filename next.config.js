@@ -40,6 +40,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: '*.googleusercontent.com',
+        port: '',
+        pathname: '/**',
+      },
       // Permite cargar imágenes desde enlaces de redirección de Google Images
       // Puedes añadir más patrones aquí para otros dominios si los necesitas
     ],

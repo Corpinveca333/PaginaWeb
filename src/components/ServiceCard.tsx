@@ -62,10 +62,6 @@ export default function ServiceCard({
   const imageUrl = normalizedFeaturedImage;
   const baseUrl = 'servicios';
 
-  console.log('DEBUG_FEATURED_IMG:', featured_image_url);
-  console.log('DEBUG_ICONO_URL:', icono_url);
-  console.log('DEBUG_IMAGE_URL_FINAL:', imageUrl);
-
   // Para el botón, si no hay imagen, usar string vacío
   const itemDataForButton = {
     id: id,
