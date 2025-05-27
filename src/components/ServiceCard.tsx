@@ -54,25 +54,26 @@ export default function ServiceCard({
   // Campos comunes
   const { id, title, slug, featured_image_url, icono_url, precio } = servicio;
 
-  // Normalizar URLs de Google Drive
-  const normalizedFeaturedImage = normalizeDriveUrl(featured_image_url);
-  const normalizedIconoUrl = normalizeDriveUrl(icono_url);
+  // Normalizar URLs de Google Drive - solo si realmente hay una URL
+  const normalizedFeaturedImage = featured_image_url ? normalizeDriveUrl(featured_image_url) : null;
+  const normalizedIconoUrl = icono_url ? normalizeDriveUrl(icono_url) : null;
 
-  // Determinar qué imagen mostrar (usar imagen local si no hay una válida)
-  const imageUrl = normalizedFeaturedImage || '/servicio01.jpg';
+  // Determinar qué imagen mostrar (sin fallbacks)
+  const imageUrl = normalizedFeaturedImage;
   const baseUrl = 'servicios';
 
   console.log('DEBUG_FEATURED_IMG:', featured_image_url);
   console.log('DEBUG_ICONO_URL:', icono_url);
   console.log('DEBUG_IMAGE_URL_FINAL:', imageUrl);
 
+  // Para el botón, si no hay imagen, usar string vacío
   const itemDataForButton = {
     id: id,
     name: title,
     price: precio,
     sku: `SERV-${id}`,
     slug: slug,
-    image: normalizedIconoUrl || imageUrl,
+    image: normalizedIconoUrl || imageUrl || '',
   };
 
   const cardClasses = `card card-compact w-full bg-custom-rey text-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 h-full flex flex-col ${containerClassName}`;
@@ -81,25 +82,31 @@ export default function ServiceCard({
     <div className={cardClasses}>
       <figure className="relative h-48 sm:h-56 bg-gray-700">
         <Link href={`/${baseUrl}/${slug}`} className="block w-full h-full">
-          <Image
-            src={normalizedIconoUrl || imageUrl}
-            alt={title || 'Imagen del servicio'}
-            fill
-            className={
-              normalizedIconoUrl && displayMode === 'detail'
-                ? 'object-contain p-8'
-                : normalizedIconoUrl
-                  ? 'object-contain p-4'
-                  : 'object-cover'
-            }
-            sizes={
-              displayMode === 'detail'
-                ? '(max-width: 640px) 90vw, 360px'
-                : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
-            }
-            priority={displayMode === 'detail'}
-            unoptimized={true}
-          />
+          {normalizedIconoUrl || imageUrl ? (
+            <Image
+              src={normalizedIconoUrl || imageUrl || ''}
+              alt={title || 'Imagen del servicio'}
+              fill
+              className={
+                normalizedIconoUrl && displayMode === 'detail'
+                  ? 'object-contain p-8'
+                  : normalizedIconoUrl
+                    ? 'object-contain p-4'
+                    : 'object-cover'
+              }
+              sizes={
+                displayMode === 'detail'
+                  ? '(max-width: 640px) 90vw, 360px'
+                  : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+              }
+              priority={displayMode === 'detail'}
+              unoptimized={true}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="text-gray-400 text-sm">Sin imagen</span>
+            </div>
+          )}
         </Link>
       </figure>
 

@@ -6,8 +6,8 @@
  * Convierte una URL de Google Drive al formato correcto para imágenes
  * Soporta tanto URLs con formato /uc?id= como enlaces completos compartidos
  */
-export function normalizeDriveUrl(url: string | null | undefined): string {
-    if (!url) return '/servicio01.jpg'; // Fallback a una imagen existente en public
+export function normalizeDriveUrl(url: string | null | undefined): string | null {
+    if (!url) return null; // No fallback, si no hay URL, devolver null
 
     // Si es una URL local, devolverla sin cambios
     if (url.startsWith('/')) {
