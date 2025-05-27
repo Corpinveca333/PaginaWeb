@@ -7,6 +7,7 @@ import DOMPurify from 'dompurify';
 import { Servicio, ServicioListItem } from '@/services/supabase';
 import AddToRequestButton from './AddToRequestButton';
 import { normalizeDriveUrl } from '@/lib/imageUtils';
+import { getOptimizedImageUrl } from '@/lib/supabaseImageUtils';
 
 interface ServiceCardProps {
   servicio: Servicio | ServicioListItem | null | undefined;
@@ -54,12 +55,11 @@ export default function ServiceCard({
   // Campos comunes
   const { id, title, slug, featured_image_url, icono_url, precio } = servicio;
 
-  // Normalizar URLs de Google Drive - solo si realmente hay una URL
-  const normalizedFeaturedImage = featured_image_url ? normalizeDriveUrl(featured_image_url) : null;
-  const normalizedIconoUrl = icono_url ? normalizeDriveUrl(icono_url) : null;
+  // Obtener imágenes optimizadas (primero intentar Supabase, luego Google Drive)
+  // Asumimos que no hay imágenes en Supabase todavía, así que usamos null como primer parámetro
+  const imageUrl = getOptimizedImageUrl(null, featured_image_url);
+  const iconoUrl = getOptimizedImageUrl(null, icono_url);
 
-  // Determinar qué imagen mostrar (sin fallbacks)
-  const imageUrl = normalizedFeaturedImage;
   const baseUrl = 'servicios';
 
   // Para el botón, si no hay imagen, usar string vacío
@@ -69,7 +69,7 @@ export default function ServiceCard({
     price: precio,
     sku: `SERV-${id}`,
     slug: slug,
-    image: normalizedIconoUrl || imageUrl || '',
+    image: iconoUrl || imageUrl,
   };
 
   const cardClasses = `card card-compact w-full bg-custom-rey text-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 h-full flex flex-col ${containerClassName}`;
@@ -78,31 +78,25 @@ export default function ServiceCard({
     <div className={cardClasses}>
       <figure className="relative h-48 sm:h-56 bg-gray-700">
         <Link href={`/${baseUrl}/${slug}`} className="block w-full h-full">
-          {normalizedIconoUrl || imageUrl ? (
-            <Image
-              src={normalizedIconoUrl || imageUrl || ''}
-              alt={title || 'Imagen del servicio'}
-              fill
-              className={
-                normalizedIconoUrl && displayMode === 'detail'
-                  ? 'object-contain p-8'
-                  : normalizedIconoUrl
-                    ? 'object-contain p-4'
-                    : 'object-cover'
-              }
-              sizes={
-                displayMode === 'detail'
-                  ? '(max-width: 640px) 90vw, 360px'
-                  : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
-              }
-              priority={displayMode === 'detail'}
-              unoptimized={true}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <span className="text-gray-400 text-sm">Sin imagen</span>
-            </div>
-          )}
+          <Image
+            src={iconoUrl || imageUrl}
+            alt={title || 'Imagen del servicio'}
+            fill
+            className={
+              iconoUrl && displayMode === 'detail'
+                ? 'object-contain p-8'
+                : iconoUrl
+                  ? 'object-contain p-4'
+                  : 'object-cover'
+            }
+            sizes={
+              displayMode === 'detail'
+                ? '(max-width: 640px) 90vw, 360px'
+                : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+            }
+            priority={displayMode === 'detail'}
+            unoptimized={true}
+          />
         </Link>
       </figure>
 
@@ -117,10 +111,10 @@ export default function ServiceCard({
             </Link>
           </h2>
 
-          {normalizedIconoUrl && normalizedIconoUrl !== imageUrl && displayMode === 'list' && (
+          {iconoUrl && iconoUrl !== imageUrl && displayMode === 'list' && (
             <div className="relative w-10 h-10 ml-3 flex-shrink-0">
               <Image
-                src={normalizedIconoUrl}
+                src={iconoUrl}
                 alt={`Icono de ${title}`}
                 fill
                 className="object-contain"
