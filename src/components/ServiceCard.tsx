@@ -6,6 +6,7 @@ import Link from 'next/link';
 import DOMPurify from 'dompurify';
 import { Servicio, ServicioListItem } from '@/services/supabase';
 import AddToRequestButton from './AddToRequestButton';
+import { normalizeDriveUrl, shouldSkipOptimization } from '@/lib/imageUtils';
 
 interface ServiceCardProps {
   servicio: Servicio | ServicioListItem | null | undefined;
@@ -53,15 +54,12 @@ export default function ServiceCard({
   // Campos comunes
   const { id, title, slug, featured_image_url, icono_url, precio } = servicio;
 
-  // Campos específicos del modo detalle
-  // const content = // Eliminado, se usa servicio.content en useEffect
-  //   displayMode === 'detail' && 'content' in servicio ? (servicio as Servicio).content : null;
-  // const alcanceDelServicio = // Eliminado, se usa servicio.alcance_del_servicio en useEffect
-  //   displayMode === 'detail' && 'alcance_del_servicio' in servicio
-  //     ? (servicio as Servicio).alcance_del_servicio
-  //     : null;
+  // Normalizar URLs de Google Drive
+  const normalizedFeaturedImage = normalizeDriveUrl(featured_image_url);
+  const normalizedIconoUrl = normalizeDriveUrl(icono_url);
 
-  const imageUrl = featured_image_url || '/placeholder-service-image.jpg';
+  // Determinar qué imagen mostrar
+  const imageUrl = normalizedFeaturedImage || '/placeholder-service-image.jpg';
   const baseUrl = 'servicios';
 
   console.log('DEBUG_FEATURED_IMG:', featured_image_url);
@@ -74,7 +72,7 @@ export default function ServiceCard({
     price: precio,
     sku: `SERV-${id}`,
     slug: slug,
-    image: icono_url || imageUrl,
+    image: normalizedIconoUrl || imageUrl,
   };
 
   const cardClasses = `card card-compact w-full bg-custom-rey text-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 h-full flex flex-col ${containerClassName}`;
@@ -84,13 +82,13 @@ export default function ServiceCard({
       <figure className="relative h-48 sm:h-56 bg-gray-700">
         <Link href={`/${baseUrl}/${slug}`} className="block w-full h-full">
           <Image
-            src={icono_url || imageUrl}
+            src={normalizedIconoUrl || imageUrl}
             alt={title || 'Imagen del servicio'}
             fill
             className={
-              icono_url && displayMode === 'detail'
+              normalizedIconoUrl && displayMode === 'detail'
                 ? 'object-contain p-8'
-                : icono_url
+                : normalizedIconoUrl
                   ? 'object-contain p-4'
                   : 'object-cover'
             }
@@ -100,6 +98,7 @@ export default function ServiceCard({
                 : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
             }
             priority={displayMode === 'detail'}
+            unoptimized={(normalizedIconoUrl || imageUrl)?.includes('drive.google.com')}
           />
         </Link>
       </figure>
@@ -115,14 +114,15 @@ export default function ServiceCard({
             </Link>
           </h2>
 
-          {icono_url && icono_url !== imageUrl && displayMode === 'list' && (
+          {normalizedIconoUrl && normalizedIconoUrl !== imageUrl && displayMode === 'list' && (
             <div className="relative w-10 h-10 ml-3 flex-shrink-0">
               <Image
-                src={icono_url}
+                src={normalizedIconoUrl}
                 alt={`Icono de ${title}`}
                 fill
                 className="object-contain"
                 sizes="40px"
+                unoptimized={normalizedIconoUrl?.includes('drive.google.com')}
               />
             </div>
           )}

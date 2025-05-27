@@ -42,6 +42,9 @@ const nextConfig = {
       // Permite cargar imágenes desde enlaces de redirección de Google Images
       // Puedes añadir más patrones aquí para otros dominios si los necesitas
     ],
+    // Lista de dominios que no deben usar la optimización de imágenes
+    unoptimized: true,
+    dangerouslyAllowSVG: true,
   },
   webpack: (config, { isServer }) => {
     // Optimizaciones para la carga de chunks
