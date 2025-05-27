@@ -64,6 +64,8 @@ export default function ServiceCard({
   const imageUrl = featured_image_url || '/placeholder-service-image.jpg';
   const baseUrl = 'servicios';
 
+  console.log('DEBUG_IMAGE_URLS:', { featured_image_url, icono_url, imageUrl });
+
   const itemDataForButton = {
     id: id,
     name: title,
