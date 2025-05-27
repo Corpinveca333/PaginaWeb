@@ -27,6 +27,18 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'drive.google.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        port: '',
+        pathname: '/**',
+      },
       // Permite cargar imágenes desde enlaces de redirección de Google Images
       // Puedes añadir más patrones aquí para otros dominios si los necesitas
     ],
