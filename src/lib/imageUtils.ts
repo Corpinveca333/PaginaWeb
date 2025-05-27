@@ -5,6 +5,7 @@
 /**
  * Convierte una URL de Google Drive al formato correcto para imágenes
  * Soporta tanto URLs con formato /uc?id= como enlaces completos compartidos
+ * Usa un método alternativo que es más compatible con Next.js y Vercel
  */
 export function normalizeDriveUrl(url: string | null | undefined): string | null {
     if (!url) return null; // No fallback, si no hay URL, devolver null
@@ -14,23 +15,28 @@ export function normalizeDriveUrl(url: string | null | undefined): string | null
         return url;
     }
 
-    // Si ya tiene el formato correcto, devolverlo tal cual
-    if (url.includes('drive.google.com/uc?id=')) {
-        // Asegurarse de que tenga el parámetro export=view
-        if (!url.includes('export=view')) {
-            return `${url}&export=view`;
-        }
-        return url;
-    }
+    // Detectar si es una URL de Google Drive
+    if (url.includes('drive.google.com')) {
+        // Extraer el ID del archivo, ya sea formato /uc?id= o /file/d/
+        let fileId = '';
 
-    // Si es una URL de Google Drive en formato de compartir
-    if (url.includes('drive.google.com/file/d/')) {
-        // Extraer el ID del archivo
-        const idMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-        if (idMatch && idMatch[1]) {
-            const fileId = idMatch[1];
-            // Usar directamente la URL de Google Drive con export=view
-            return `https://drive.google.com/uc?id=${fileId}&export=view`;
+        if (url.includes('drive.google.com/uc?id=')) {
+            // Ya tiene el formato uc?id=
+            const idMatch = url.match(/id=([^&]+)/);
+            if (idMatch && idMatch[1]) {
+                fileId = idMatch[1];
+            }
+        } else if (url.includes('drive.google.com/file/d/')) {
+            // Formato de compartir
+            const idMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            if (idMatch && idMatch[1]) {
+                fileId = idMatch[1];
+            }
+        }
+
+        if (fileId) {
+            // Usar un formato alternativo más compatible con Vercel
+            return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
         }
     }
 
@@ -43,7 +49,7 @@ export function normalizeDriveUrl(url: string | null | undefined): string | null
  * Ya no usa el proxy de imágenes eliminado, sino que devuelve la URL normalizada directamente
  */
 export function getProxyImageUrl(url: string): string {
-    if (!url) return '/placeholder-service-image.jpg';
+    if (!url) return '/placeholder-image.svg';
 
     // Si ya es una URL local, devolverla tal cual
     if (url.startsWith('/')) {

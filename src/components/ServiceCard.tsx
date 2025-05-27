@@ -25,6 +25,7 @@ export default function ServiceCard({
   const [sanitizedContent, setSanitizedContent] = useState('');
   const [sanitizedAlcance, setSanitizedAlcance] = useState('');
   const [imageError, setImageError] = useState(false);
+  const [iconError, setIconError] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && servicio) {
@@ -56,14 +57,53 @@ export default function ServiceCard({
   // Campos comunes
   const { id, title, slug, featured_image_url, icono_url, precio } = servicio;
 
-  // Obtener imágenes optimizadas (primero intentar Supabase, luego Google Drive)
-  // Comprobar si la URL es de Supabase o de Google Drive
-  const supabasePath =
-    featured_image_url && featured_image_url.includes('supabase.co') ? featured_image_url : null;
-  const iconoSupabasePath = icono_url && icono_url.includes('supabase.co') ? icono_url : null;
+  // Verificar si las URLs son de Supabase o tienen el formato antiguo
+  // Si provienen de Supabase, las usamos directamente
+  const isSupabaseImage = featured_image_url && featured_image_url.includes('supabase.co');
+  const isSupabaseIcon = icono_url && icono_url.includes('supabase.co');
 
-  const imageUrl = getOptimizedImageUrl(supabasePath, featured_image_url);
-  const iconoUrl = getOptimizedImageUrl(iconoSupabasePath, icono_url);
+  // Determinar la fuente de la imagen principal
+  let imageUrl = '';
+  if (isSupabaseImage) {
+    // Imagen de Supabase - usar directamente
+    imageUrl = featured_image_url || '';
+  } else if (featured_image_url && featured_image_url.includes('drive.google.com')) {
+    // Imagen de Google Drive - usar miniatura
+    const driveId =
+      featured_image_url.match(/id=([^&]+)/) || featured_image_url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (driveId && driveId[1]) {
+      imageUrl = `https://drive.google.com/thumbnail?id=${driveId[1]}&sz=w1000`;
+    } else {
+      imageUrl = '/placeholder-image.svg';
+    }
+  } else if (featured_image_url && featured_image_url.startsWith('/')) {
+    // Imagen local
+    imageUrl = featured_image_url;
+  } else {
+    // Fallback
+    imageUrl = '/placeholder-image.svg';
+  }
+
+  // Determinar la fuente del icono
+  let iconUrl = '';
+  if (isSupabaseIcon) {
+    // Icono de Supabase - usar directamente
+    iconUrl = icono_url || '';
+  } else if (icono_url && icono_url.includes('drive.google.com')) {
+    // Icono de Google Drive - usar miniatura
+    const driveId = icono_url.match(/id=([^&]+)/) || icono_url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (driveId && driveId[1]) {
+      iconUrl = `https://drive.google.com/thumbnail?id=${driveId[1]}&sz=w400`;
+    } else {
+      iconUrl = '';
+    }
+  } else if (icono_url && icono_url.startsWith('/')) {
+    // Icono local
+    iconUrl = icono_url;
+  } else {
+    // Sin icono
+    iconUrl = '';
+  }
 
   const baseUrl = 'servicios';
 
@@ -74,15 +114,26 @@ export default function ServiceCard({
     price: precio,
     sku: `SERV-${id}`,
     slug: slug,
-    image: iconoUrl || imageUrl,
+    image:
+      iconUrl && !iconError
+        ? iconUrl
+        : imageUrl && !imageError
+          ? imageUrl
+          : '/placeholder-image.svg',
   };
 
   const cardClasses = `card card-compact w-full bg-custom-rey text-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 h-full flex flex-col ${containerClassName}`;
 
   // Manejar errores de carga de imagen
   const handleImageError = () => {
-    console.error('Error al cargar la imagen:', iconoUrl || imageUrl);
+    console.error('Error al cargar la imagen principal:', imageUrl);
     setImageError(true);
+  };
+
+  // Manejar errores de carga de icono
+  const handleIconError = () => {
+    console.error('Error al cargar el icono:', iconUrl);
+    setIconError(true);
   };
 
   return (
@@ -90,18 +141,18 @@ export default function ServiceCard({
       <figure className="relative h-48 sm:h-56 bg-gray-700">
         <Link href={`/${baseUrl}/${slug}`} className="block w-full h-full">
           {imageError ? (
-            <div className="flex items-center justify-center w-full h-full">
+            <div className="flex items-center justify-center w-full h-full bg-gray-700 text-center p-4">
               <span className="text-gray-400">Imagen no disponible</span>
             </div>
           ) : (
             <Image
-              src={iconoUrl || imageUrl}
+              src={imageUrl}
               alt={title || 'Imagen del servicio'}
               fill
               className={
-                iconoUrl && displayMode === 'detail'
+                iconUrl && !iconError && displayMode === 'detail'
                   ? 'object-contain p-8'
-                  : iconoUrl
+                  : iconUrl && !iconError
                     ? 'object-contain p-4'
                     : 'object-cover'
               }
@@ -129,16 +180,16 @@ export default function ServiceCard({
             </Link>
           </h2>
 
-          {iconoUrl && iconoUrl !== imageUrl && displayMode === 'list' && !imageError && (
+          {iconUrl && !iconError && iconUrl !== imageUrl && displayMode === 'list' && (
             <div className="relative w-10 h-10 ml-3 flex-shrink-0">
               <Image
-                src={iconoUrl}
+                src={iconUrl}
                 alt={`Icono de ${title}`}
                 fill
                 className="object-contain"
                 sizes="40px"
                 unoptimized={true}
-                onError={handleImageError}
+                onError={handleIconError}
               />
             </div>
           )}
