@@ -2,22 +2,20 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import Link from 'next/link';
 
-export default function AdminLogin() {
+export default function RegisterAdmin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
-  const supabase = createClientComponentClient();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email || !password) {
-      setError('Por favor ingrese email y contraseña');
+      setError('Por favor complete todos los campos');
       return;
     }
 
@@ -25,30 +23,29 @@ export default function AdminLogin() {
       setLoading(true);
       setError(null);
 
-      console.log('Intentando iniciar sesión con:', email);
-
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (signInError) {
-        console.error('Error de inicio de sesión:', signInError);
+      const data = await response.json();
 
-        if (signInError.message.includes('Invalid login credentials')) {
-          throw new Error('Credenciales inválidas. Verifica tu email y contraseña.');
-        } else {
-          throw signInError;
-        }
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al registrar administrador');
       }
 
-      console.log('Inicio de sesión exitoso:', data);
+      setSuccess('Usuario administrador registrado correctamente. Redirigiendo al login...');
 
-      // Redireccionar al dashboard de imágenes después de iniciar sesión
-      router.push('/admin/imagenes');
+      // Redirigir al login después de 2 segundos
+      setTimeout(() => {
+        router.push('/admin');
+      }, 2000);
     } catch (error: any) {
-      console.error('Error capturado:', error);
-      setError(error.message || 'Error al iniciar sesión');
+      console.error('Error en registro:', error);
+      setError(error.message || 'Error al registrar administrador');
     } finally {
       setLoading(false);
     }
@@ -58,13 +55,16 @@ export default function AdminLogin() {
     <div className="flex items-center justify-center min-h-screen bg-custom-negro">
       <div className="w-full max-w-md p-8 space-y-8 bg-custom-rey rounded-lg shadow-md">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white">Acceso Administradores</h1>
-          <p className="mt-2 text-gray-400">Ingrese sus credenciales para continuar</p>
+          <h1 className="text-2xl font-bold text-white">Registrar Administrador</h1>
+          <p className="mt-2 text-gray-400">
+            Complete el formulario para crear una cuenta de administrador
+          </p>
         </div>
 
         {error && <div className="p-3 bg-red-500 text-white text-sm rounded">{error}</div>}
+        {success && <div className="p-3 bg-green-500 text-white text-sm rounded">{success}</div>}
 
-        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-300">
@@ -92,7 +92,7 @@ export default function AdminLogin() {
                 id="password"
                 name="password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 required
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -114,19 +114,10 @@ export default function AdminLogin() {
                          focus:ring-offset-2 focus:ring-custom-naranja
                          disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+              {loading ? 'Registrando...' : 'Registrar Administrador'}
             </button>
           </div>
         </form>
-
-        <div className="mt-4 text-center">
-          <p className="text-sm text-gray-400">
-            ¿No tiene una cuenta?{' '}
-            <Link href="/admin/register" className="text-custom-naranja hover:underline">
-              Registrar nuevo administrador
-            </Link>
-          </p>
-        </div>
       </div>
     </div>
   );

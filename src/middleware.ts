@@ -6,10 +6,14 @@ export async function middleware(req: NextRequest) {
     const res = NextResponse.next();
     const supabase = createMiddlewareClient({ req, res });
 
-    // Verificar si la ruta está en admin/imagenes (o cualquier ruta de admin excepto la de login)
-    if (req.nextUrl.pathname.startsWith('/admin') &&
-        req.nextUrl.pathname !== '/admin') {
+    // Rutas públicas que no requieren autenticación
+    const publicRoutes = ['/admin', '/admin/register'];
+    if (publicRoutes.includes(req.nextUrl.pathname)) {
+        return res;
+    }
 
+    // Verificar si la ruta está en admin/* pero no es una ruta pública
+    if (req.nextUrl.pathname.startsWith('/admin')) {
         // Comprobar si el usuario está autenticado
         const { data: { session } } = await supabase.auth.getSession();
 
