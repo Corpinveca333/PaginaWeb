@@ -24,18 +24,29 @@ export default function AdminLogin() {
       setLoading(true);
       setError(null);
 
-      const { error } = await supabase.auth.signInWithPassword({
+      console.log('Intentando iniciar sesión con:', email);
+
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) {
-        throw error;
+      if (signInError) {
+        console.error('Error de inicio de sesión:', signInError);
+
+        if (signInError.message.includes('Invalid login credentials')) {
+          throw new Error('Credenciales inválidas. Verifica tu email y contraseña.');
+        } else {
+          throw signInError;
+        }
       }
+
+      console.log('Inicio de sesión exitoso:', data);
 
       // Redireccionar al dashboard de imágenes después de iniciar sesión
       router.push('/admin/imagenes');
     } catch (error: any) {
+      console.error('Error capturado:', error);
       setError(error.message || 'Error al iniciar sesión');
     } finally {
       setLoading(false);
@@ -69,7 +80,7 @@ export default function AdminLogin() {
                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-600 
                            rounded-md text-black placeholder-gray-500 focus:outline-none 
                            focus:ring-2 focus:ring-custom-naranja focus:border-custom-naranja"
-                placeholder="admin@ejemplo.com"
+                placeholder="admin@corpinveca.com"
               />
             </div>
             <div>
