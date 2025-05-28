@@ -6,11 +6,6 @@ export async function middleware(req: NextRequest) {
     const res = NextResponse.next();
     const supabase = createMiddlewareClient({ req, res });
 
-    // Permitir el acceso a la página de creación del primer administrador sin autenticación
-    if (req.nextUrl.pathname === '/admin/create-first-admin') {
-        return res;
-    }
-
     // Verificar si la ruta está en admin/imagenes (o cualquier ruta de admin excepto la de login)
     if (req.nextUrl.pathname.startsWith('/admin') &&
         req.nextUrl.pathname !== '/admin') {
