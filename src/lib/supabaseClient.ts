@@ -1,13 +1,3 @@
-console.log('--- DEBUGGING ENV VARS ---');
-console.log('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
-console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-Object.keys(process.env).forEach(key => {
-  if (key.startsWith('NEXT_PUBLIC_')) {
-    console.log(`${key}:`, process.env[key]);
-  }
-});
-console.log('--- FIN DEBUGGING ENV VARS ---');
-
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase'; // Ajusta la ruta a tu archivo de tipos generado
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

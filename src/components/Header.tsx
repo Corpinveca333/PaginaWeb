@@ -19,7 +19,8 @@ const defaultMenuItems: MenuItem[] = [
   { label: 'Quiénes Somos', path: '/quienes-somos' },
 ];
 
-const adminMenuItems: MenuItem[] = [{ label: 'Imágenes', path: '/admin/imagenes' }];
+// Modificar para apuntar directamente a la pantalla de login
+const adminMenuItems: MenuItem[] = [{ label: 'ADMIN', path: '/admin' }];
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -84,48 +85,17 @@ const Header: React.FC = () => {
               <NavLink key={item.path} href={item.path} label={item.label} />
             ))}
 
-            {/* Menú de administración desplegable */}
-            <div className="relative">
-              <button
-                onClick={toggleAdminMenu}
-                className="px-3 py-2 rounded-md text-sm font-medium transition-colors text-white hover:text-gray-300 flex items-center"
-              >
-                Admin
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`h-4 w-4 ml-1 transform transition-transform ${isAdminMenuOpen ? 'rotate-180' : ''}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-
-              {isAdminMenuOpen && (
-                <div className="absolute top-full left-0 mt-1 w-48 bg-custom-rey shadow-lg rounded-md py-2 z-50">
-                  {adminMenuItems.map(item => (
-                    <Link
-                      key={item.path}
-                      href={item.path}
-                      className="block px-4 py-2 text-sm text-white hover:bg-custom-naranja transition-colors"
-                      onClick={() => setIsAdminMenuOpen(false)}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* Enlace directo a la página de admin sin desplegable */}
+            <Link
+              href="/admin"
+              className="px-3 py-2 rounded-md text-sm font-medium transition-colors text-white hover:text-gray-300"
+            >
+              ADMIN
+            </Link>
           </nav>
 
           {/* Botones de acción, contador y Theme Toggle */}
-          <div className="flex items-center space-x-3 md:space-x-4">
+          <div className="flex items-center space-x-4">
             {/* Contador de la Lista de Solicitud */}
             <Link href="/solicitud" className="relative text-white hover:text-gray-300">
               <svg

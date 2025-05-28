@@ -2,18 +2,41 @@
 
 import { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useRouter } from 'next/navigation';
 import ImageUploader from '@/components/ImageUploader';
 
 export default function ImageDashboard() {
   const [images, setImages] = useState<Array<{ name: string; url: string }>>([]);
   const [loading, setLoading] = useState(true);
+  const [authChecking, setAuthChecking] = useState(true);
   const supabase = createClientComponentClient();
+  const router = useRouter();
   const BUCKET_NAME = 'imagenes_servicios';
 
-  // Cargar imágenes al montar el componente
+  // Verificar autenticación
   useEffect(() => {
-    loadImages();
-  }, []);
+    async function checkAuth() {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!session) {
+          // Si no hay sesión, redirigir al login
+          router.push('/admin');
+          return;
+        }
+
+        setAuthChecking(false);
+        loadImages();
+      } catch (error) {
+        console.error('Error al verificar autenticación:', error);
+        router.push('/admin');
+      }
+    }
+
+    checkAuth();
+  }, [router, supabase]);
 
   // Función para cargar imágenes desde Supabase
   const loadImages = async () => {
@@ -50,15 +73,41 @@ export default function ImageDashboard() {
     loadImages();
   };
 
+  // Función para cerrar sesión
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      router.push('/admin');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
+
   // Función para copiar URL al portapapeles
   const copyToClipboard = (url: string) => {
     navigator.clipboard.writeText(url);
     alert('URL copiada al portapapeles');
   };
 
+  if (authChecking) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-gray-300">Verificando autenticación...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6 text-gray-100">Administración de Imágenes</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-100">Administración de Imágenes</h1>
+        <button
+          onClick={handleLogout}
+          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+        >
+          Cerrar sesión
+        </button>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Panel de subida */}
