@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import Link from 'next/link';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
@@ -118,15 +117,6 @@ export default function AdminLogin() {
             </button>
           </div>
         </form>
-
-        <div className="mt-4 text-center">
-          <p className="text-sm text-gray-400">
-            ¿No tiene una cuenta?{' '}
-            <Link href="/admin/register" className="text-custom-naranja hover:underline">
-              Registrar nuevo administrador
-            </Link>
-          </p>
-        </div>
       </div>
     </div>
   );
