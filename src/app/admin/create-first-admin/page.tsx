@@ -80,8 +80,8 @@ export default function CreateFirstAdmin() {
                 required
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-custom-negro border border-gray-600 
-                           rounded-md text-white placeholder-gray-400 focus:outline-none 
+                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-600 
+                           rounded-md text-black placeholder-gray-500 focus:outline-none 
                            focus:ring-2 focus:ring-custom-naranja focus:border-custom-naranja"
                 placeholder="admin@ejemplo.com"
               />
@@ -98,8 +98,8 @@ export default function CreateFirstAdmin() {
                 required
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-custom-negro border border-gray-600 
-                           rounded-md text-white placeholder-gray-400 focus:outline-none 
+                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-600 
+                           rounded-md text-black placeholder-gray-500 focus:outline-none 
                            focus:ring-2 focus:ring-custom-naranja focus:border-custom-naranja"
                 placeholder="••••••••"
               />
@@ -115,8 +115,8 @@ export default function CreateFirstAdmin() {
                 required
                 value={secretKey}
                 onChange={e => setSecretKey(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-custom-negro border border-gray-600 
-                           rounded-md text-white placeholder-gray-400 focus:outline-none 
+                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-600 
+                           rounded-md text-black placeholder-gray-500 focus:outline-none 
                            focus:ring-2 focus:ring-custom-naranja focus:border-custom-naranja"
                 placeholder="Clave secreta para crear administrador"
               />
